@@ -1,6 +1,8 @@
 # Cyber Aula — prototipo estático
 
-Prototipo inicial de una academia de redes y ciberseguridad de un solo docente. No requiere instalación ni compilación: es HTML, CSS y JavaScript. El reproductor usa un clip CC0 genérico alojado en MDN y limita la reproducción de demostración a 10 segundos.
+Prototipo de una academia de redes y ciberseguridad de un solo docente. No requiere instalación ni compilación: es HTML, CSS y JavaScript.
+
+La portada pública presenta el catálogo, datos de cada curso y previews. Al iniciar sesión aparece el espacio personal con cursos, certificados y soporte. Si el usuario no tiene matrículas, se muestra el estado vacío. Al abrir un curso se oculta la portada y se ve la ficha, el programa, los resultados de aprendizaje y la preview del reproductor. El clip temporal de MDN se limita a 10 segundos.
 
 ## Publicarlo en Cloudflare Pages
 
@@ -33,7 +35,7 @@ No hace falta una extensión de Cloudflare para que los despliegues funcionen: a
 1. Instala Git para Windows si aún no está instalado. Comprueba en la terminal de VS Code con `git --version`.
 2. Abre la paleta con `Ctrl+Shift+P`, ejecuta **Git: Clone** e ingresa la URL HTTPS del repositorio GitHub que ya está conectado a Cloudflare Pages.
 3. Selecciona una carpeta local y abre el repositorio clonado en VS Code.
-4. Copia ahí los archivos actualizados de este prototipo (`index.html`, `styles.css`, `app.js`, `supabase-config.js` y `README.md`), reemplazando los archivos anteriores si corresponde.
+4. Copia ahí los archivos actualizados (`index.html`, `styles.css`, `app.js` y `README.md`), reemplazando los anteriores si corresponde. Conserva tu `supabase-config.js` ya configurado; la copia del espacio de Codex puede tener los campos vacíos.
 5. Abre esa carpeta en VS Code. En **Source Control**, revisa los cambios, escribe un mensaje como `Actualiza academia de ciberseguridad`, pulsa **Commit** y luego **Sync Changes** o **Push**.
 6. Cloudflare Pages compilará/publicará el commit automáticamente. Revisa el estado en **Workers & Pages → tu proyecto → Deployments**.
 
@@ -41,7 +43,9 @@ Si la terminal dice `fatal: not a git repository`, confirma que abriste la carpe
 
 ## Editar los cursos
 
-Los datos de ejemplo están al inicio de `app.js`, en el arreglo `courses`: títulos, categorías, cantidad de lecciones y temario. Ahora solo se puede reproducir la primera lección de cada curso; las otras aparecen como espacios de ejemplo.
+Los datos de ejemplo están al inicio de `app.js`, en el arreglo `courses`: títulos, categorías, niveles, duración, temario, descripción y resultados de aprendizaje. Cada ficha permite ver la preview; la primera lección se reproduce y las siguientes abren el aviso de compra próxima.
+
+La tarjeta de compra es ilustrativa. No hay pasarela de pago, tabla de matrículas ni creación automática de certificados todavía; por eso las cuentas autenticadas ven el estado vacío hasta conectar esos datos.
 
 Para cambiar el video de muestra, sustituye la URL de `demoVideo` en `app.js`. La prueba detiene el clip a los 10 segundos mediante `sampleLimitSeconds`. Al tener videos reales, cada lección debe guardar su propia URL y duración.
 

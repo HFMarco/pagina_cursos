@@ -1,45 +1,37 @@
-// Datos de demostración. Más adelante pueden venir de un CMS o una API.
+// Catálogo estático de demostración. Más adelante puede venir de Supabase.
 const demoVideo = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+const sampleLimitSeconds = 10;
 
 const courses = [
   {
-    id: 'redes',
-    title: 'Redes desde cero',
-    category: 'Networking',
-    lessons: 8,
-    progress: 22,
-    theme: 'moss',
-    mark: '01',
-    label: 'ORDENA TUS IDEAS',
+    id: 'redes', title: 'Redes desde cero', category: 'Networking', level: 'Inicial', duration: '2 h 30 min', lessons: 8,
+    theme: 'moss', mark: '01', label: 'INFRAESTRUCTURA',
+    shortDescription: 'Entiende cómo se conectan los dispositivos y cómo viajan los datos por una red.',
+    description: 'Construye una base práctica en redes: desde los conceptos esenciales hasta el direccionamiento y el diagnóstico de conectividad.',
     lessonTitle: 'Bienvenido al laboratorio de redes',
-    description: 'Clip genérico de prueba del reproductor. La maqueta lo detiene al llegar a 10 segundos.',
-    chapters: ['Introducción · video demo', 'Modelo OSI y TCP/IP', 'Direccionamiento IPv4']
+    lessonDescription: 'Preview temporal del reproductor. El clip se detiene al llegar a 10 segundos; aquí irá una clase real del curso.',
+    chapters: ['Introducción al curso', 'Modelo OSI y TCP/IP', 'Direccionamiento IPv4', 'Subnetting paso a paso', 'Switching y routing', 'DNS y DHCP', 'Diagnóstico de conectividad', 'Laboratorio final'],
+    outcomes: ['Explicar el recorrido de los datos usando OSI y TCP/IP.', 'Leer direcciones IPv4 y calcular subredes básicas.', 'Usar herramientas de diagnóstico para encontrar fallas comunes.']
   },
   {
-    id: 'ciberseguridad',
-    title: 'Fundamentos de ciberseguridad',
-    category: 'Seguridad defensiva',
-    lessons: 12,
-    progress: 0,
-    theme: 'blue',
-    mark: '02',
-    label: 'DECIDE CON CLARIDAD',
+    id: 'ciberseguridad', title: 'Fundamentos de ciberseguridad', category: 'Seguridad defensiva', level: 'Inicial', duration: '3 h 15 min', lessons: 12,
+    theme: 'blue', mark: '02', label: 'DEFENSA DIGITAL',
+    shortDescription: 'Aprende principios de seguridad y reconoce amenazas frecuentes en entornos digitales.',
+    description: 'Una introducción práctica a la protección de cuentas, dispositivos y datos, con foco en prevención y respuesta básica.',
     lessonTitle: 'Principios de seguridad digital',
-    description: 'Lección de muestra. Este prototipo usa un clip público genérico para revisar el reproductor.',
-    chapters: ['Introducción · video demo', 'Confidencialidad, integridad y disponibilidad', 'Reconoce el phishing']
+    lessonDescription: 'Preview temporal del reproductor. La clase real reemplazará este clip de muestra.',
+    chapters: ['Introducción a la seguridad', 'Confidencialidad, integridad y disponibilidad', 'Amenazas y vulnerabilidades', 'Contraseñas y autenticación', 'Reconoce el phishing', 'Seguridad del navegador', 'Copias de seguridad', 'Actualizaciones seguras', 'Introducción a incidentes', 'Registro de evidencias', 'Plan de respuesta', 'Repaso final'],
+    outcomes: ['Distinguir amenazas, vulnerabilidades y riesgos.', 'Aplicar medidas básicas para proteger cuentas y dispositivos.', 'Reconocer señales de phishing y reportar incidentes de forma ordenada.']
   },
   {
-    id: 'linux',
-    title: 'Linux para seguridad',
-    category: 'Herramientas',
-    lessons: 6,
-    progress: 0,
-    theme: 'rose',
-    mark: '03',
-    label: 'COMPARTE MEJOR',
+    id: 'linux', title: 'Linux para seguridad', category: 'Herramientas', level: 'Inicial', duration: '2 h', lessons: 6,
+    theme: 'rose', mark: '03', label: 'TERMINAL Y SISTEMA',
+    shortDescription: 'Familiarízate con la terminal, los usuarios, permisos y herramientas esenciales.',
+    description: 'Aprende a moverte por Linux y administrar tareas comunes con una base útil para redes y ciberseguridad.',
     lessonTitle: 'Tu entorno de trabajo',
-    description: 'Lección de muestra. El diseño está organizado para agregar más cursos y lecciones.',
-    chapters: ['Introducción · video demo', 'Comandos básicos de terminal', 'Permisos y usuarios']
+    lessonDescription: 'Preview temporal del reproductor. La clase real reemplazará este clip de muestra.',
+    chapters: ['Introducción al entorno Linux', 'Comandos básicos de terminal', 'Archivos y directorios', 'Permisos y usuarios', 'Procesos y servicios', 'Laboratorio guiado'],
+    outcomes: ['Navegar el sistema de archivos desde la terminal.', 'Leer permisos y ejecutar comandos con criterio.', 'Usar herramientas base para observar procesos y servicios.']
   }
 ];
 
@@ -47,74 +39,11 @@ const courseGrid = document.querySelector('#course-grid');
 const lessonList = document.querySelector('#lesson-list');
 const video = document.querySelector('#lesson-video');
 const videoError = document.querySelector('#video-error');
-const sampleLimitSeconds = 10;
-let selectedCourseId = courses[0].id;
-
-function renderCourses() {
-  courseGrid.innerHTML = courses.map((course) => `
-    <button class="course-card ${course.id === selectedCourseId ? 'selected' : ''}" type="button"
-      data-course-id="${course.id}" aria-pressed="${course.id === selectedCourseId}">
-      <span class="course-cover ${course.theme}">
-        <span class="cover-symbol">${course.mark}</span>
-        <span class="cover-label">${course.label}</span>
-      </span>
-      <span class="course-info">
-        <span class="course-category">${course.category}</span>
-        <span class="course-info-title">${course.title}</span>
-        <span class="course-meta"><span>${course.lessons} lecciones</span><span>${course.progress ? `${course.progress}% completado` : 'Aún por empezar'}</span></span>
-        <span class="progress-track" aria-hidden="true"><span style="width:${course.progress}%"></span></span>
-      </span>
-    </button>
-  `).join('');
-
-  courseGrid.querySelectorAll('[data-course-id]').forEach((card) => {
-    card.addEventListener('click', () => selectCourse(card.dataset.courseId));
-  });
-}
-
-function renderLessonList(course) {
-  lessonList.innerHTML = course.chapters.map((chapter, index) => {
-    const isAvailable = index === 0;
-    return `
-      <li>
-        <button class="lesson-item ${index === 0 ? 'current' : ''}" type="button" ${isAvailable ? '' : 'disabled'}
-          aria-current="${index === 0 ? 'true' : 'false'}">
-          <span class="lesson-number">${isAvailable ? '▶' : String(index + 1).padStart(2, '0')}</span>
-          <span class="lesson-name">${chapter}</span>
-          <span class="lesson-duration">${isAvailable ? '00:10' : 'Próximamente'}</span>
-        </button>
-      </li>
-    `;
-  }).join('');
-}
-
-function selectCourse(courseId) {
-  const course = courses.find((item) => item.id === courseId);
-  if (!course) return;
-  selectedCourseId = course.id;
-  renderCourses();
-  renderLessonList(course);
-  document.querySelector('#syllabus-course-title').textContent = course.title;
-  document.querySelector('#lesson-title').textContent = course.lessonTitle;
-  document.querySelector('#lesson-description').textContent = course.description;
-  document.querySelector('#lesson-kicker').textContent = `LECCIÓN 01 · ${course.category.toUpperCase()}`;
-  document.querySelector('#lesson-count').textContent = `${course.chapters.length} visibles`;
-  video.pause();
-  video.currentTime = 0;
-  videoError.hidden = true;
-}
-
-video.addEventListener('timeupdate', () => {
-  if (video.currentTime >= sampleLimitSeconds) {
-    video.pause();
-    video.currentTime = sampleLimitSeconds;
-  }
-});
-
-video.addEventListener('error', () => { videoError.hidden = false; });
-video.addEventListener('loadeddata', () => { videoError.hidden = true; });
-
+const homeView = document.querySelector('#home-view');
+const courseView = document.querySelector('#course-view');
+const studentHub = document.querySelector('#student-hub');
 const authDialog = document.querySelector('#auth-dialog');
+const purchaseDialog = document.querySelector('#purchase-dialog');
 const authMessage = document.querySelector('#auth-message');
 const loginTab = document.querySelector('#login-tab');
 const registerTab = document.querySelector('#register-tab');
@@ -122,6 +51,7 @@ const authTabs = document.querySelector('#auth-tabs');
 const authForms = document.querySelector('#auth-forms');
 const authSession = document.querySelector('#auth-session');
 const accessButton = document.querySelector('#open-auth');
+const memberChip = document.querySelector('#member-chip');
 const authConfig = window.SUPABASE_CONFIG || {};
 const hasSupabaseConfig = Boolean(
   window.supabase?.createClient &&
@@ -131,7 +61,103 @@ const hasSupabaseConfig = Boolean(
 const supabaseClient = hasSupabaseConfig
   ? window.supabase.createClient(authConfig.url, authConfig.publishableKey)
   : null;
+
 let activeSession = null;
+let selectedCourse = null;
+
+function renderCourses() {
+  courseGrid.innerHTML = courses.map((course) => `
+    <article class="course-card">
+      <div class="course-cover ${course.theme}">
+        <span class="cover-symbol">${course.mark}</span>
+        <span class="cover-label">${course.label}</span>
+        <span class="course-preview-tag">PREVIEW DISPONIBLE</span>
+      </div>
+      <div class="course-info">
+        <p class="course-category">${course.category}</p>
+        <h3>${course.title}</h3>
+        <p class="course-summary">${course.shortDescription}</p>
+        <div class="course-meta"><span>${course.level}</span><span>${course.duration}</span><span>${course.lessons} clases</span></div>
+        <div class="course-card-actions"><span class="price-teaser">Precio por definir</span><button class="course-open" type="button" data-course-id="${course.id}">Ver programa <span>→</span></button></div>
+      </div>
+    </article>
+  `).join('');
+
+  courseGrid.querySelectorAll('[data-course-id]').forEach((button) => {
+    button.addEventListener('click', () => openCourse(button.dataset.courseId));
+  });
+}
+
+function renderCourseLessons(course) {
+  lessonList.innerHTML = course.chapters.map((chapter, index) => `
+    <li>
+      <button class="lesson-item ${index === 0 ? 'current' : 'locked'}" type="button" data-lesson-index="${index}" aria-current="${index === 0}">
+        <span class="lesson-number">${index === 0 ? '▶' : '⌑'}</span>
+        <span class="lesson-name">${chapter}</span>
+        <span class="lesson-duration">${index === 0 ? '00:10 · preview' : 'Con acceso'}</span>
+      </button>
+    </li>
+  `).join('');
+
+  lessonList.querySelectorAll('[data-lesson-index]').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (Number(button.dataset.lessonIndex) !== 0) {
+        openPurchaseDialog(course);
+        return;
+      }
+      lessonList.querySelectorAll('.lesson-item').forEach((item) => item.classList.remove('current'));
+      button.classList.add('current');
+      video.pause();
+      video.currentTime = 0;
+      document.querySelector('#lesson-title').textContent = course.lessonTitle;
+      document.querySelector('#lesson-description').textContent = course.lessonDescription;
+    });
+  });
+}
+
+function openCourse(courseId) {
+  const course = courses.find((item) => item.id === courseId);
+  if (!course) return;
+  selectedCourse = course;
+  homeView.hidden = true;
+  courseView.hidden = false;
+  window.location.hash = `curso/${course.id}`;
+  document.querySelector('#course-breadcrumb').innerHTML = `Catálogo <span>/</span> ${course.title}`;
+  document.querySelector('#detail-category').textContent = `${course.category.toUpperCase()} · RUTA DE APRENDIZAJE`;
+  document.querySelector('#detail-title').textContent = course.title;
+  document.querySelector('#detail-description').textContent = course.description;
+  document.querySelector('#detail-level').textContent = `Nivel ${course.level}`;
+  document.querySelector('#detail-duration').textContent = course.duration;
+  document.querySelector('#detail-lessons').textContent = `${course.lessons} clases`;
+  document.querySelector('#syllabus-course-title').textContent = course.title;
+  document.querySelector('#lesson-count').textContent = `${course.lessons} clases`;
+  document.querySelector('#lesson-kicker').textContent = `PREVIEW · ${course.category.toUpperCase()}`;
+  document.querySelector('#lesson-title').textContent = course.lessonTitle;
+  document.querySelector('#lesson-description').textContent = course.lessonDescription;
+  document.querySelector('#course-outcomes').innerHTML = course.outcomes.map((outcome) => `<li>${outcome}</li>`).join('');
+  renderCourseLessons(course);
+  video.pause();
+  video.currentTime = 0;
+  videoError.hidden = true;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showHome(anchor = 'inicio') {
+  courseView.hidden = true;
+  homeView.hidden = false;
+  selectedCourse = null;
+  if (window.location.hash.startsWith('#curso/')) window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${anchor}`);
+  if (anchor !== 'inicio') requestAnimationFrame(() => document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  else window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openPurchaseDialog(course) {
+  const selected = course || selectedCourse;
+  if (!selected) return;
+  document.querySelector('#purchase-title').textContent = 'Compra próximamente';
+  document.querySelector('#purchase-message').textContent = `Estamos preparando las opciones de compra para “${selected.title}”. Aún no se aceptan pagos ni se habilitan matrículas.`;
+  purchaseDialog.showModal();
+}
 
 function setAuthMode(mode) {
   const registering = mode === 'register';
@@ -152,19 +178,22 @@ function showAuthState(session) {
   authTabs.hidden = Boolean(user);
   authForms.hidden = Boolean(user);
   authSession.hidden = !user;
-  accessButton.innerHTML = user
-    ? '<span aria-hidden="true">✓</span> Mi cuenta'
-    : '<span aria-hidden="true">↗</span> Acceder';
-  accessButton.setAttribute('aria-label', user ? 'Abrir información de cuenta' : 'Acceder a tu cuenta');
+  studentHub.hidden = !user;
+  document.querySelector('#public-nav').hidden = Boolean(user);
+  document.querySelector('#member-nav').hidden = !user;
+  accessButton.hidden = Boolean(user);
+  memberChip.hidden = !user;
 
   if (user) {
-    document.querySelector('#session-title').textContent = `Hola${user.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ''}.`;
+    const fullName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'estudiante';
+    document.querySelector('#student-greeting').textContent = fullName;
+    document.querySelector('#member-name').textContent = fullName;
+    document.querySelector('#session-title').textContent = `Hola, ${fullName}.`;
     document.querySelector('#session-email').textContent = user.email || '';
     const verified = Boolean(user.email_confirmed_at || user.confirmed_at);
-    document.querySelector('#session-verification').textContent = verified
-      ? 'Correo verificado'
-      : 'Correo pendiente de verificación';
-    document.querySelector('#session-verification').classList.toggle('verified', verified);
+    const verification = document.querySelector('#session-verification');
+    verification.textContent = verified ? 'Correo verificado' : 'Correo pendiente de verificación';
+    verification.classList.toggle('verified', verified);
     authMessage.textContent = 'Sesión activa en este navegador.';
   }
 }
@@ -179,12 +208,24 @@ function formatAuthError(error) {
   return error?.message || 'No se pudo completar la solicitud. Inténtalo de nuevo.';
 }
 
-accessButton.addEventListener('click', () => {
-  if (!activeSession) setAuthMode('login');
+function openAuth(mode = 'login') {
+  if (!activeSession) setAuthMode(mode);
   authDialog.showModal();
-});
+}
+
+accessButton.addEventListener('click', () => openAuth('login'));
+memberChip.addEventListener('click', () => authDialog.showModal());
 loginTab.addEventListener('click', () => setAuthMode('login'));
 registerTab.addEventListener('click', () => setAuthMode('register'));
+document.querySelector('#back-to-home').addEventListener('click', () => showHome('catalogo'));
+document.querySelector('#detail-back-footer').addEventListener('click', () => showHome('catalogo'));
+document.querySelector('#purchase-button').addEventListener('click', () => openPurchaseDialog());
+document.querySelectorAll('[data-purchase]').forEach((button) => button.addEventListener('click', () => openPurchaseDialog()));
+document.querySelectorAll('[data-home-link]').forEach((link) => link.addEventListener('click', (event) => {
+  event.preventDefault();
+  const anchor = link.getAttribute('href').slice(1);
+  showHome(anchor);
+}));
 
 document.querySelector('#register-form').addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -192,7 +233,6 @@ document.querySelector('#register-form').addEventListener('submit', async (event
     authMessage.textContent = 'Completa supabase-config.js y vuelve a desplegar el sitio para habilitar el registro.';
     return;
   }
-
   const values = new FormData(event.currentTarget);
   const name = String(values.get('name') || '').trim();
   const email = String(values.get('email') || '').trim();
@@ -200,25 +240,18 @@ document.querySelector('#register-form').addEventListener('submit', async (event
   const submitButton = event.currentTarget.querySelector('button[type="submit"]');
   submitButton.disabled = true;
   authMessage.textContent = 'Creando cuenta…';
-
   const { data, error } = await supabaseClient.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: name },
-      emailRedirectTo: `${window.location.origin}${window.location.pathname}`
-    }
+    email, password,
+    options: { data: { full_name: name }, emailRedirectTo: `${window.location.origin}${window.location.pathname}` }
   });
   submitButton.disabled = false;
-
   if (error) {
     authMessage.textContent = formatAuthError(error);
     return;
   }
-
   if (data.session) {
-    authMessage.textContent = 'Cuenta creada. Tu sesión ya está activa.';
     showAuthState(data.session);
+    authMessage.textContent = 'Cuenta creada. Tu sesión ya está activa.';
   } else {
     authMessage.textContent = `Cuenta creada para ${email}. Revisa tu correo y pulsa el enlace de confirmación antes de acceder.`;
   }
@@ -230,22 +263,18 @@ document.querySelector('#login-form').addEventListener('submit', async (event) =
     authMessage.textContent = 'Completa supabase-config.js y vuelve a desplegar el sitio para habilitar el acceso.';
     return;
   }
-
   const values = new FormData(event.currentTarget);
   const email = String(values.get('email') || '').trim();
   const password = String(values.get('password') || '');
   const submitButton = event.currentTarget.querySelector('button[type="submit"]');
   submitButton.disabled = true;
   authMessage.textContent = 'Verificando acceso…';
-
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   submitButton.disabled = false;
-
   if (error) {
     authMessage.textContent = formatAuthError(error);
     return;
   }
-
   showAuthState(data.session);
   authMessage.textContent = 'Acceso correcto.';
 });
@@ -262,6 +291,15 @@ document.querySelector('#sign-out').addEventListener('click', async () => {
   authMessage.textContent = 'Sesión cerrada.';
 });
 
+video.addEventListener('timeupdate', () => {
+  if (video.currentTime >= sampleLimitSeconds) {
+    video.pause();
+    video.currentTime = sampleLimitSeconds;
+  }
+});
+video.addEventListener('error', () => { videoError.hidden = false; });
+video.addEventListener('loadeddata', () => { videoError.hidden = true; });
+
 if (supabaseClient) {
   supabaseClient.auth.getSession().then(({ data, error }) => {
     if (error) authMessage.textContent = formatAuthError(error);
@@ -273,4 +311,6 @@ if (supabaseClient) {
 renderCourses();
 video.querySelector('source').src = demoVideo;
 video.load();
-selectCourse(selectedCourseId);
+if (window.location.hash.startsWith('#curso/')) {
+  openCourse(window.location.hash.slice('#curso/'.length));
+}
