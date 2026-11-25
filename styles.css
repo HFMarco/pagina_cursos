@@ -212,6 +212,16 @@ video { display: block; width: 100%; height: 100%; object-fit: contain; backgrou
 .auth-form input:focus { border-color: #41cfc7; box-shadow: 0 0 0 3px rgba(65, 207, 199, .12); }
 .auth-submit { justify-content: space-between; margin-top: 4px; padding: 12px 14px; background: #146472; }
 .auth-submit:hover { background: #17868a; }
+.auth-submit:disabled { cursor: wait; opacity: .65; transform: none; }
+.auth-session { padding: 7px 0 3px; text-align: center; }
+.auth-session[hidden] { display: none; }
+.session-avatar { display: grid; width: 45px; height: 45px; margin: 0 auto 13px; place-items: center; border: 1px solid #3a8b83; border-radius: 50%; background: #163a43; color: #71e4d8; font-size: 19px; }
+.auth-session h2 { margin-bottom: 5px; color: #edf5fc; font-size: 20px; }
+.auth-session .auth-intro { margin-bottom: 13px; overflow-wrap: anywhere; }
+.verification-pill { display: inline-block; margin: 0 0 15px; padding: 6px 9px; border: 1px solid #7b6940; border-radius: 20px; background: #342c1e; color: #e3ca85; font-size: 9px; }
+.verification-pill.verified { border-color: #246d65; background: #153b3c; color: #72e0cc; }
+.secondary-button { display: block; width: 100%; padding: 10px; border: 1px solid #354b5e; border-radius: 6px; background: transparent; color: #c1cfda; font-size: 10px; font-weight: 600; cursor: pointer; }
+.secondary-button:hover { border-color: #50cec5; color: #eafffb; }
 .auth-message { min-height: 30px; margin: 14px 0 0; padding: 9px 10px; border: 1px solid #273e51; border-radius: 6px; background: #142538; color: #a9c8d1; font-size: 9px; line-height: 1.5; }
 .auth-privacy { margin: 9px 0 0; color: #718493; font-size: 8px; text-align: center; }
 

@@ -6,7 +6,7 @@ Prototipo inicial de una academia de redes y ciberseguridad de un solo docente. 
 
 ### Recomendado: conectar un repositorio Git
 
-1. Crea un repositorio en GitHub y sube `index.html`, `styles.css`, `app.js` y `README.md` a la raíz de la rama `main`.
+1. Crea un repositorio en GitHub y sube `index.html`, `styles.css`, `app.js`, `supabase-config.js` y `README.md` a la raíz de la rama `main`.
 2. En Cloudflare, abre **Workers & Pages → Create application → Pages → Connect to Git**.
 3. Autoriza GitHub y selecciona el repositorio.
 4. En la configuración del despliegue, deja el framework sin seleccionar, usa `main` como rama de producción, deja vacío el comando de compilación y usa `.` como directorio de salida.
@@ -33,7 +33,7 @@ No hace falta una extensión de Cloudflare para que los despliegues funcionen: a
 1. Instala Git para Windows si aún no está instalado. Comprueba en la terminal de VS Code con `git --version`.
 2. Abre la paleta con `Ctrl+Shift+P`, ejecuta **Git: Clone** e ingresa la URL HTTPS del repositorio GitHub que ya está conectado a Cloudflare Pages.
 3. Selecciona una carpeta local y abre el repositorio clonado en VS Code.
-4. Copia ahí los archivos actualizados de este prototipo (`index.html`, `styles.css`, `app.js` y `README.md`), reemplazando los archivos anteriores si corresponde.
+4. Copia ahí los archivos actualizados de este prototipo (`index.html`, `styles.css`, `app.js`, `supabase-config.js` y `README.md`), reemplazando los archivos anteriores si corresponde.
 5. Abre esa carpeta en VS Code. En **Source Control**, revisa los cambios, escribe un mensaje como `Actualiza academia de ciberseguridad`, pulsa **Commit** y luego **Sync Changes** o **Push**.
 6. Cloudflare Pages compilará/publicará el commit automáticamente. Revisa el estado en **Workers & Pages → tu proyecto → Deployments**.
 
@@ -59,6 +59,14 @@ Para aceptar lecciones de hasta 30 minutos, el reproductor HTML no necesita camb
 
 La versión actual está lista para publicar tal cual, sin framework. Si el catálogo crece y se quiere reutilizar componentes, una ruta sencilla es migrar a Astro o Vite + React. Cloudflare Pages reconoce esos frameworks y compila automáticamente desde Git al elegir el preset adecuado; la carpeta publicada normalmente será `dist` para Vite y Astro. Cloudflare también genera enlaces de vista previa para otras ramas.
 
-## Acceso y registro
+## Activar acceso y verificación de correo
 
-El botón **Acceder** abre formularios de acceso y registro con validación de campos del navegador. En esta versión son solo una maqueta: no se envía ni se guarda ningún usuario o contraseña. Para registrar cuentas reales se debe conectar un proveedor de autenticación y un backend.
+El formulario usa Supabase Auth para crear cuentas, confirmar el correo e iniciar/cerrar sesión. La página nunca guarda la contraseña por su cuenta. Antes de publicarlo:
+
+1. Crea un proyecto en Supabase.
+2. En **Authentication → Providers → Email**, deja habilitados los registros y **Confirm email**.
+3. En **Authentication → URL Configuration**, configura el **Site URL** con la URL de producción `https://TU-PROYECTO.pages.dev/` y agrégala también a **Redirect URLs**. Si pruebas con Live Server, agrega su URL local, por ejemplo `http://127.0.0.1:5500/**`.
+4. En Supabase, copia la **Project URL** y la **Publishable key** a `supabase-config.js`. La clave publicable está diseñada para uso en el navegador; nunca uses una Secret key ni una `service_role` en el frontend.
+5. Guarda, sube el cambio al repositorio y espera el despliegue de Cloudflare Pages.
+
+La interfaz indica si el correo fue confirmado. La autenticación no restringe todavía las páginas ni los videos: esa autorización se debe implementar aparte, en servidor, antes de usar cursos privados o pagados. La clave publicable puede estar en el repositorio, pero no contiene privilegios secretos.

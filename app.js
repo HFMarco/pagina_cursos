@@ -118,6 +118,20 @@ const authDialog = document.querySelector('#auth-dialog');
 const authMessage = document.querySelector('#auth-message');
 const loginTab = document.querySelector('#login-tab');
 const registerTab = document.querySelector('#register-tab');
+const authTabs = document.querySelector('#auth-tabs');
+const authForms = document.querySelector('#auth-forms');
+const authSession = document.querySelector('#auth-session');
+const accessButton = document.querySelector('#open-auth');
+const authConfig = window.SUPABASE_CONFIG || {};
+const hasSupabaseConfig = Boolean(
+  window.supabase?.createClient &&
+  /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(authConfig.url || '') &&
+  /^(sb_publishable_|eyJ)/.test(authConfig.publishableKey || '')
+);
+const supabaseClient = hasSupabaseConfig
+  ? window.supabase.createClient(authConfig.url, authConfig.publishableKey)
+  : null;
+let activeSession = null;
 
 function setAuthMode(mode) {
   const registering = mode === 'register';
@@ -127,26 +141,134 @@ function setAuthMode(mode) {
   registerTab.classList.toggle('active', registering);
   loginTab.setAttribute('aria-selected', String(!registering));
   registerTab.setAttribute('aria-selected', String(registering));
-  authMessage.textContent = 'Prototipo: el formulario valida los datos, pero todavía no crea cuentas reales.';
+  authMessage.textContent = hasSupabaseConfig
+    ? ''
+    : 'Falta configurar supabase-config.js con la Project URL y la Publishable key.';
 }
 
-document.querySelector('#open-auth').addEventListener('click', () => {
-  setAuthMode('login');
+function showAuthState(session) {
+  activeSession = session;
+  const user = session?.user;
+  authTabs.hidden = Boolean(user);
+  authForms.hidden = Boolean(user);
+  authSession.hidden = !user;
+  accessButton.innerHTML = user
+    ? '<span aria-hidden="true">✓</span> Mi cuenta'
+    : '<span aria-hidden="true">↗</span> Acceder';
+  accessButton.setAttribute('aria-label', user ? 'Abrir información de cuenta' : 'Acceder a tu cuenta');
+
+  if (user) {
+    document.querySelector('#session-title').textContent = `Hola${user.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ''}.`;
+    document.querySelector('#session-email').textContent = user.email || '';
+    const verified = Boolean(user.email_confirmed_at || user.confirmed_at);
+    document.querySelector('#session-verification').textContent = verified
+      ? 'Correo verificado'
+      : 'Correo pendiente de verificación';
+    document.querySelector('#session-verification').classList.toggle('verified', verified);
+    authMessage.textContent = 'Sesión activa en este navegador.';
+  }
+}
+
+function formatAuthError(error) {
+  const message = (error?.message || '').toLowerCase();
+  if (message.includes('invalid login credentials')) return 'El correo o la contraseña no coinciden.';
+  if (message.includes('email not confirmed')) return 'Confirma tu correo antes de iniciar sesión.';
+  if (message.includes('user already registered')) return 'Ya existe una cuenta con ese correo. Prueba acceder.';
+  if (message.includes('password should be at least')) return 'La contraseña debe tener al menos 8 caracteres.';
+  if (message.includes('rate limit')) return 'Se alcanzó el límite de intentos. Espera un momento y vuelve a probar.';
+  return error?.message || 'No se pudo completar la solicitud. Inténtalo de nuevo.';
+}
+
+accessButton.addEventListener('click', () => {
+  if (!activeSession) setAuthMode('login');
   authDialog.showModal();
 });
 loginTab.addEventListener('click', () => setAuthMode('login'));
 registerTab.addEventListener('click', () => setAuthMode('register'));
 
-document.querySelector('#register-form').addEventListener('submit', (event) => {
+document.querySelector('#register-form').addEventListener('submit', async (event) => {
   event.preventDefault();
-  const name = new FormData(event.currentTarget).get('name').trim();
-  authMessage.textContent = `Formulario validado para ${name}. Aún falta conectar un servicio de autenticación para crear la cuenta.`;
+  if (!supabaseClient) {
+    authMessage.textContent = 'Completa supabase-config.js y vuelve a desplegar el sitio para habilitar el registro.';
+    return;
+  }
+
+  const values = new FormData(event.currentTarget);
+  const name = String(values.get('name') || '').trim();
+  const email = String(values.get('email') || '').trim();
+  const password = String(values.get('password') || '');
+  const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  authMessage.textContent = 'Creando cuenta…';
+
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: name },
+      emailRedirectTo: `${window.location.origin}${window.location.pathname}`
+    }
+  });
+  submitButton.disabled = false;
+
+  if (error) {
+    authMessage.textContent = formatAuthError(error);
+    return;
+  }
+
+  if (data.session) {
+    authMessage.textContent = 'Cuenta creada. Tu sesión ya está activa.';
+    showAuthState(data.session);
+  } else {
+    authMessage.textContent = `Cuenta creada para ${email}. Revisa tu correo y pulsa el enlace de confirmación antes de acceder.`;
+  }
 });
 
-document.querySelector('#login-form').addEventListener('submit', (event) => {
+document.querySelector('#login-form').addEventListener('submit', async (event) => {
   event.preventDefault();
-  authMessage.textContent = 'Formulario validado. La autenticación real todavía no está conectada.';
+  if (!supabaseClient) {
+    authMessage.textContent = 'Completa supabase-config.js y vuelve a desplegar el sitio para habilitar el acceso.';
+    return;
+  }
+
+  const values = new FormData(event.currentTarget);
+  const email = String(values.get('email') || '').trim();
+  const password = String(values.get('password') || '');
+  const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  authMessage.textContent = 'Verificando acceso…';
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  submitButton.disabled = false;
+
+  if (error) {
+    authMessage.textContent = formatAuthError(error);
+    return;
+  }
+
+  showAuthState(data.session);
+  authMessage.textContent = 'Acceso correcto.';
 });
+
+document.querySelector('#sign-out').addEventListener('click', async () => {
+  if (!supabaseClient) return;
+  const { error } = await supabaseClient.auth.signOut();
+  if (error) {
+    authMessage.textContent = formatAuthError(error);
+    return;
+  }
+  showAuthState(null);
+  setAuthMode('login');
+  authMessage.textContent = 'Sesión cerrada.';
+});
+
+if (supabaseClient) {
+  supabaseClient.auth.getSession().then(({ data, error }) => {
+    if (error) authMessage.textContent = formatAuthError(error);
+    showAuthState(data?.session || null);
+  });
+  supabaseClient.auth.onAuthStateChange((_event, session) => showAuthState(session));
+}
 
 renderCourses();
 video.querySelector('source').src = demoVideo;

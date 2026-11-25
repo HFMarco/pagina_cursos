@@ -7,6 +7,8 @@
   <meta name="theme-color" content="#111b2b">
   <title>Cyber Aula | Redes y ciberseguridad</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="supabase-config.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -101,10 +103,11 @@
   <dialog id="auth-dialog" class="auth-dialog" aria-labelledby="auth-title">
     <form method="dialog" class="dialog-close-form"><button class="dialog-close" aria-label="Cerrar">×</button></form>
     <div class="auth-brand"><span class="brand-mark">⌘</span><span class="eyebrow">CYBER AULA · CUENTA</span></div>
-    <div class="auth-tabs" role="tablist" aria-label="Acceso o registro">
+    <div id="auth-tabs" class="auth-tabs" role="tablist" aria-label="Acceso o registro">
       <button id="login-tab" class="auth-tab active" type="button" role="tab" aria-selected="true">Acceder</button>
       <button id="register-tab" class="auth-tab" type="button" role="tab" aria-selected="false">Crear cuenta</button>
     </div>
+    <div id="auth-forms">
     <section id="login-panel" class="auth-panel" role="tabpanel" aria-labelledby="login-tab">
       <h2 id="auth-title">Qué bueno verte.</h2>
       <p class="auth-intro">Accede a tus cursos y continúa aprendiendo.</p>
@@ -124,8 +127,16 @@
         <button class="primary-button auth-submit" type="submit">Crear cuenta <span aria-hidden="true">→</span></button>
       </form>
     </section>
-    <p id="auth-message" class="auth-message" role="status" aria-live="polite">Prototipo: el formulario valida los datos, pero todavía no crea cuentas reales.</p>
-    <p class="auth-privacy">No ingreses una contraseña que uses en otros servicios.</p>
+    </div>
+    <section id="auth-session" class="auth-session" hidden aria-live="polite">
+      <div class="session-avatar">✓</div>
+      <h2 id="session-title">Sesión iniciada</h2>
+      <p id="session-email" class="auth-intro"></p>
+      <p id="session-verification" class="verification-pill"></p>
+      <button id="sign-out" class="secondary-button" type="button">Cerrar sesión</button>
+    </section>
+    <p id="auth-message" class="auth-message" role="status" aria-live="polite">Configura el proyecto de autenticación para activar el acceso.</p>
+    <p class="auth-privacy">Nunca compartas tu contraseña. La autenticación la gestiona Supabase.</p>
   </dialog>
 </body>
 </html>
