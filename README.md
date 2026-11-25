@@ -1,6 +1,6 @@
-# Aula — prototipo estático
+# Cyber Aula — prototipo estático
 
-Prototipo inicial de una academia de un solo docente y varios cursos. No requiere instalación ni compilación: es HTML, CSS y JavaScript. El reproductor usa un clip CC0 de muestra alojado en MDN y limita la reproducción de demostración a 10 segundos.
+Prototipo inicial de una academia de redes y ciberseguridad de un solo docente. No requiere instalación ni compilación: es HTML, CSS y JavaScript. El reproductor usa un clip CC0 genérico alojado en MDN y limita la reproducción de demostración a 10 segundos.
 
 ## Publicarlo en Cloudflare Pages
 
@@ -17,6 +17,27 @@ Prototipo inicial de una academia de un solo docente y varios cursos. No requier
 También puedes elegir **Workers & Pages → Create application → Pages → Drag and drop your files** y subir la carpeta del sitio o un ZIP con los archivos. Cloudflare te dará una dirección `*.pages.dev`. Este método no se puede convertir después en un proyecto conectado a Git; si quieres despliegues automáticos desde Git, elige la integración Git desde el principio.
 
 La página y sus archivos estáticos son públicos. Pages sirve la interfaz, no procesa cuentas, pagos, matrículas ni permisos de acceso a cursos.
+
+## Trabajar desde VS Code
+
+### Extensiones útiles
+
+- **Live Server** (Ritwick Dey): vista previa local y recarga al guardar.
+- **Prettier - Code formatter**: formato consistente para HTML, CSS y JavaScript.
+- **GitLens** (opcional): historial y cambios de Git dentro del editor. VS Code ya incluye integración básica con Git.
+
+No hace falta una extensión de Cloudflare para que los despliegues funcionen: al conectar el repositorio con Pages, cada `git push` a la rama de producción genera un nuevo despliegue.
+
+### Abrir el repositorio correcto
+
+1. Instala Git para Windows si aún no está instalado. Comprueba en la terminal de VS Code con `git --version`.
+2. Abre la paleta con `Ctrl+Shift+P`, ejecuta **Git: Clone** e ingresa la URL HTTPS del repositorio GitHub que ya está conectado a Cloudflare Pages.
+3. Selecciona una carpeta local y abre el repositorio clonado en VS Code.
+4. Copia ahí los archivos actualizados de este prototipo (`index.html`, `styles.css`, `app.js` y `README.md`), reemplazando los archivos anteriores si corresponde.
+5. Abre esa carpeta en VS Code. En **Source Control**, revisa los cambios, escribe un mensaje como `Actualiza academia de ciberseguridad`, pulsa **Commit** y luego **Sync Changes** o **Push**.
+6. Cloudflare Pages compilará/publicará el commit automáticamente. Revisa el estado en **Workers & Pages → tu proyecto → Deployments**.
+
+Si la terminal dice `fatal: not a git repository`, confirma que abriste la carpeta clonada del repositorio y no otra carpeta. Si ya tienes un repositorio remoto, clónalo con **Git: Clone**; no inicialices una carpeta distinta con `git init`.
 
 ## Editar los cursos
 
@@ -37,3 +58,7 @@ Para aceptar lecciones de hasta 30 minutos, el reproductor HTML no necesita camb
 ## Framework más adelante
 
 La versión actual está lista para publicar tal cual, sin framework. Si el catálogo crece y se quiere reutilizar componentes, una ruta sencilla es migrar a Astro o Vite + React. Cloudflare Pages reconoce esos frameworks y compila automáticamente desde Git al elegir el preset adecuado; la carpeta publicada normalmente será `dist` para Vite y Astro. Cloudflare también genera enlaces de vista previa para otras ramas.
+
+## Acceso y registro
+
+El botón **Acceder** abre formularios de acceso y registro con validación de campos del navegador. En esta versión son solo una maqueta: no se envía ni se guarda ningún usuario o contraseña. Para registrar cuentas reales se debe conectar un proveedor de autenticación y un backend.
