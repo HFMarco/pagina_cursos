@@ -2,7 +2,7 @@
 
 Prototipo de una academia de redes y ciberseguridad de un solo docente. No requiere instalación ni compilación: es HTML, CSS y JavaScript.
 
-La portada pública presenta el catálogo, datos de cada curso y previews. Al iniciar sesión aparece el espacio personal con cursos, certificados y soporte. Si el usuario no tiene matrículas, se muestra el estado vacío. Al abrir un curso se oculta la portada y se ve la ficha, el programa, los resultados de aprendizaje y la preview del reproductor. El clip temporal de MDN se limita a 10 segundos.
+La portada pública presenta el catálogo y la ficha de cada curso. Cualquier visitante puede ver la introducción de 10 segundos; las lecciones restantes quedan bloqueadas hasta tener matrícula. Al iniciar sesión se abre el espacio personal, una vista separada con sus cursos, certificados y soporte. Si no tiene cursos habilitados, aparece un mensaje de estado vacío. La barra superior cambia según la sesión.
 
 ## Publicarlo en Cloudflare Pages
 
@@ -35,7 +35,7 @@ No hace falta una extensión de Cloudflare para que los despliegues funcionen: a
 1. Instala Git para Windows si aún no está instalado. Comprueba en la terminal de VS Code con `git --version`.
 2. Abre la paleta con `Ctrl+Shift+P`, ejecuta **Git: Clone** e ingresa la URL HTTPS del repositorio GitHub que ya está conectado a Cloudflare Pages.
 3. Selecciona una carpeta local y abre el repositorio clonado en VS Code.
-4. Copia ahí los archivos actualizados (`index.html`, `styles.css`, `app.js` y `README.md`), reemplazando los anteriores si corresponde. Conserva tu `supabase-config.js` ya configurado; la copia del espacio de Codex puede tener los campos vacíos.
+4. Copia ahí los archivos actualizados (`index.html`, `styles.css`, `app.js`, `supabase-schema.sql` y `README.md`), reemplazando los anteriores si corresponde. Conserva tu `supabase-config.js` ya configurado; la copia del espacio de Codex puede tener los campos vacíos.
 5. Abre esa carpeta en VS Code. En **Source Control**, revisa los cambios, escribe un mensaje como `Actualiza academia de ciberseguridad`, pulsa **Commit** y luego **Sync Changes** o **Push**.
 6. Cloudflare Pages compilará/publicará el commit automáticamente. Revisa el estado en **Workers & Pages → tu proyecto → Deployments**.
 
@@ -43,9 +43,17 @@ Si la terminal dice `fatal: not a git repository`, confirma que abriste la carpe
 
 ## Editar los cursos
 
-Los datos de ejemplo están al inicio de `app.js`, en el arreglo `courses`: títulos, categorías, niveles, duración, temario, descripción y resultados de aprendizaje. Cada ficha permite ver la preview; la primera lección se reproduce y las siguientes abren el aviso de compra próxima.
+Los datos de ejemplo están al inicio de `app.js`, en el arreglo `courses`: títulos, categorías, niveles, duración, temario, descripción y resultados de aprendizaje. Cada ficha permite ver la preview; las lecciones adicionales quedan bloqueadas para visitantes y se habilitan en la interfaz al detectar una matrícula activa.
 
-La tarjeta de compra es ilustrativa. No hay pasarela de pago, tabla de matrículas ni creación automática de certificados todavía; por eso las cuentas autenticadas ven el estado vacío hasta conectar esos datos.
+La tarjeta de compra es ilustrativa: todavía no procesa pagos ni crea matrículas. Las matrículas y certificados se consultan en Supabase. El dashboard se actualiza automáticamente al recibir eventos Realtime; también vuelve a consultar los datos al regresar a la pestaña o ventana.
+
+### Activar matrículas, certificados y actualizaciones automáticas
+
+1. En tu proyecto Supabase, abre **SQL Editor**, copia el contenido de `supabase-schema.sql` y ejecútalo. Crea las tablas `enrollments` y `certificates`, activa Row Level Security para que cada alumno solo pueda leer sus propios registros y publica las tablas para Realtime.
+2. Para probar el flujo sin pagos, abre **Table Editor → enrollments → Insert row**. En `user_id` coloca el UUID del alumno, que puedes copiar desde **Authentication → Users**. Usa un `course_id` exactamente como `redes`, `ciberseguridad` o `linux`, y `status` = `active`. Al guardar, el curso aparecerá en su espacio sin que tenga que pulsar F5.
+3. Los certificados se muestran al insertar un registro en `certificates` con el `user_id`, `course_id` y, opcionalmente, `certificate_url`.
+
+La página no permite que un alumno se otorgue una matrícula a sí mismo. Para la prueba, créala desde el panel de Supabase. Cuando integres pagos, el servidor o webhook de pago deberá crear el registro después de confirmar la transacción; no insertes matrículas desde el navegador.
 
 Para cambiar el video de muestra, sustituye la URL de `demoVideo` en `app.js`. La prueba detiene el clip a los 10 segundos mediante `sampleLimitSeconds`. Al tener videos reales, cada lección debe guardar su propia URL y duración.
 
@@ -73,4 +81,4 @@ El formulario usa Supabase Auth para crear cuentas, confirmar el correo e inicia
 4. En Supabase, copia la **Project URL** y la **Publishable key** a `supabase-config.js`. La clave publicable está diseñada para uso en el navegador; nunca uses una Secret key ni una `service_role` en el frontend.
 5. Guarda, sube el cambio al repositorio y espera el despliegue de Cloudflare Pages.
 
-La interfaz indica si el correo fue confirmado. La autenticación no restringe todavía las páginas ni los videos: esa autorización se debe implementar aparte, en servidor, antes de usar cursos privados o pagados. La clave publicable puede estar en el repositorio, pero no contiene privilegios secretos.
+La interfaz indica si el correo fue confirmado. La tabla de matrículas controla qué cursos muestra el espacio personal, pero esta versión estática no protege el archivo de video contra quien conozca su URL. Antes de vender clases privadas, sirve los videos con URLs firmadas o un proveedor que valide acceso en servidor. La clave publicable puede estar en el repositorio; nunca publiques la Secret key ni una `service_role`.
