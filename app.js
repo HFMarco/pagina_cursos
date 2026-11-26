@@ -1,5 +1,4 @@
 const demoVideo = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
-const sampleLimitSeconds = 10;
 
 const courses = [
   {
@@ -82,12 +81,15 @@ function renderRoute(route = window.location.hash.slice(1), { scrollTo = true } 
 
   if (parts[0] === 'curso' && parts[1]) {
     const course = courses.find((item) => item.id === parts[1]);
-    if (course) {
+    if (course && enrolledCourseIds.has(course.id)) {
       renderCourse(course);
       courseView.hidden = false;
       if (scrollTo) window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
+    homeView.hidden = false;
+    if (scrollTo) requestAnimationFrame(() => document.querySelector('#contacto')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    return;
   }
 
   if (['alumno', 'certificados', 'soporte'].includes(parts[0])) {
@@ -113,15 +115,14 @@ function renderCourses() {
     return `
       <article class="course-card ${course.theme}">
         <div class="course-cover">
-          <span class="cover-symbol">${course.mark}</span><span class="cover-label">${course.label}</span>
-          <span class="course-preview-tag">INTRODUCCIÓN ABIERTA</span>
+          <img class="course-art" src="assets/course-${course.id}.svg" alt="Ilustración del curso ${course.title}">
           ${enrolled ? '<span class="enrolled-tag">MI CURSO</span>' : ''}
         </div>
         <div class="course-info">
           <p class="course-category">${course.category}</p><h3>${course.title}</h3><p class="course-certification">${course.certification}</p>
           <p class="course-summary">${course.shortDescription}</p>
           <div class="course-meta"><span>${course.level}</span><span>${course.duration}</span><span>${course.lessons} clases</span></div>
-          <div class="course-card-actions"><span class="price-teaser">Precio por definir</span><button class="course-open" type="button" data-course-id="${course.id}">${enrolled ? 'Continuar' : 'Ver preview'} <span>→</span></button></div>
+          <div class="course-card-actions"><span class="price-teaser">${course.certification}</span>${enrolled ? `<button class="course-open" type="button" data-course-id="${course.id}">Continuar <span>→</span></button>` : `<a class="course-open" href="#contacto" data-route="contacto" data-contact-course="${course.id}">Consultar <span>→</span></a>`}</div>
         </div>
       </article>`;
   }).join('');
@@ -140,7 +141,7 @@ function renderCourse(course) {
   document.querySelector('#detail-lessons').textContent = `${course.lessons} clases`;
   document.querySelector('#syllabus-course-title').textContent = course.title;
   document.querySelector('#lesson-count').textContent = `${course.lessons} clases`;
-  document.querySelector('#lesson-kicker').textContent = `CLASE 01 · PREVIEW · ${course.category.toUpperCase()}`;
+  document.querySelector('#lesson-kicker').textContent = `CLASE 01 · ${course.category.toUpperCase()}`;
   document.querySelector('#lesson-title').textContent = course.introTitle;
   document.querySelector('#lesson-description').textContent = course.introDescription;
   document.querySelector('#course-outcomes').innerHTML = course.outcomes.map((outcome) => `<li>${outcome}</li>`).join('');
@@ -156,9 +157,9 @@ function renderCourse(course) {
 
 function renderLessons(course, enrolled) {
   lessonList.innerHTML = course.chapters.map((chapter, index) => {
-    const preview = index === 0;
-    const locked = !preview && !enrolled;
-    return `<li><button class="lesson-item ${preview ? 'current' : locked ? 'locked' : 'included'}" type="button" data-lesson-index="${index}"><span class="lesson-number">${preview ? '▶' : locked ? '⌑' : '✓'}</span><span class="lesson-name">${chapter}</span><span class="lesson-duration">${preview ? 'Preview' : locked ? 'Bloqueada' : 'Incluida'}</span></button></li>`;
+    const firstLesson = index === 0;
+    const locked = !enrolled;
+    return `<li><button class="lesson-item ${firstLesson ? 'current' : locked ? 'locked' : 'included'}" type="button" data-lesson-index="${index}"><span class="lesson-number">${firstLesson ? '▶' : locked ? '⌑' : '✓'}</span><span class="lesson-name">${chapter}</span><span class="lesson-duration">${locked ? 'Bloqueada' : 'Incluida'}</span></button></li>`;
   }).join('');
 
   lessonList.querySelectorAll('[data-lesson-index]').forEach((button) => button.addEventListener('click', () => {
@@ -333,6 +334,11 @@ function handleRouteClick(event) {
   const link = event.target.closest('[data-route]');
   if (!link) return;
   event.preventDefault();
+  if (link.dataset.contactCourse) {
+    const course = courses.find((item) => item.id === link.dataset.contactCourse);
+    const courseField = document.querySelector('#contact-course');
+    if (course && courseField) courseField.value = course.id;
+  }
   setRoute(link.dataset.route);
 }
 
@@ -408,7 +414,8 @@ document.querySelector('#contact-form').addEventListener('submit', (event) => {
   const fields = new FormData(event.currentTarget);
   const name = String(fields.get('name') || '').trim();
   const email = String(fields.get('email') || '').trim();
-  const course = String(fields.get('course') || 'Consulta general');
+  const courseId = String(fields.get('course') || 'general');
+  const course = courses.find((item) => item.id === courseId)?.title || 'Consulta general';
   const message = String(fields.get('message') || '').trim();
   const subject = encodeURIComponent(`Consulta ${course} · ${name}`);
   const body = encodeURIComponent(`Nombre: ${name}\nCorreo: ${email}\nInterés: ${course}\n\n${message}`);
@@ -416,9 +423,6 @@ document.querySelector('#contact-form').addEventListener('submit', (event) => {
   window.location.href = `mailto:soporte@cyberaula.example?subject=${subject}&body=${body}`;
 });
 
-video.addEventListener('timeupdate', () => {
-  if (video.currentTime >= sampleLimitSeconds) { video.pause(); video.currentTime = sampleLimitSeconds; }
-});
 video.addEventListener('error', () => { videoError.hidden = false; });
 video.addEventListener('loadeddata', () => { videoError.hidden = true; });
 
