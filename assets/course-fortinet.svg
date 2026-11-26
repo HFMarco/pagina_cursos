@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img" aria-labelledby="title desc">
+  <title id="title">Fortinet Secure Networking</title><desc id="desc">Ilustración de seguridad de red con escudo digital</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102847"/><stop offset="1" stop-color="#07111f"/></linearGradient><linearGradient id="glow" x2="1" y2="1"><stop stop-color="#ff685e"/><stop offset="1" stop-color="#dc342d"/></linearGradient><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#5e8bb4" stroke-opacity=".12"/></pattern></defs>
+  <rect width="720" height="320" fill="url(#bg)"/><rect width="720" height="320" fill="url(#grid)"/>
+  <circle cx="556" cy="154" r="113" fill="#ef5548" opacity=".07"/><circle cx="556" cy="154" r="83" fill="none" stroke="#ff786b" stroke-opacity=".3"/>
+  <path d="M556 87 614 109v43c0 40-24 67-58 84-34-17-58-44-58-84v-43z" fill="#122c48" stroke="url(#glow)" stroke-width="3"/><path d="m529 153 18 18 37-42" fill="none" stroke="#ff786b" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
+  <path d="M62 228h116l24-24h73M590 235h61M585 76h75" fill="none" stroke="#ff756a" stroke-opacity=".55" stroke-width="2"/><circle cx="62" cy="228" r="5" fill="#ff756a"/><circle cx="660" cy="76" r="5" fill="#ff756a"/>
+  <text x="55" y="116" fill="#ff766b" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="4">NETWORK SECURITY</text><text x="52" y="170" fill="#f4f8ff" font-family="Arial,sans-serif" font-size="42" font-weight="700" letter-spacing="-2">FORTINET</text><text x="56" y="199" fill="#a9bfd4" font-family="Arial,sans-serif" font-size="15" letter-spacing="2">SECURE NETWORKING</text>
+</svg>

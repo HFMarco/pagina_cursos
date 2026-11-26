@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img" aria-labelledby="title desc">
+  <title id="title">Cisco CCNA</title><desc id="desc">Ilustración de una red empresarial para preparación CCNA</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17315f"/><stop offset="1" stop-color="#091426"/></linearGradient><pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="#75a9ec" stroke-opacity=".13"/></pattern></defs>
+  <rect width="720" height="320" fill="url(#bg)"/><rect width="720" height="320" fill="url(#grid)"/>
+  <g fill="none" stroke="#71a9f8" stroke-width="3" stroke-opacity=".78"><path d="M498 103 565 143 498 183 431 143z"/><path d="m498 183 67 40-67 40-67-40zM565 143v40M431 143v40M498 103V80"/><path d="M498 80h83M565 223h75M431 223h-54"/></g>
+  <g fill="#122b4e" stroke="#8cc0ff" stroke-width="2"><circle cx="498" cy="103" r="8"/><circle cx="565" cy="143" r="8"/><circle cx="431" cy="143" r="8"/><circle cx="498" cy="183" r="8"/><circle cx="565" cy="223" r="8"/><circle cx="431" cy="223" r="8"/><circle cx="498" cy="263" r="8"/></g>
+  <path d="M65 226h95l23-23h72" fill="none" stroke="#8cc0ff" stroke-opacity=".55" stroke-width="2"/><circle cx="65" cy="226" r="5" fill="#8cc0ff"/>
+  <text x="55" y="116" fill="#8cc0ff" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="4">NETWORKING · ROUTING · SWITCHING</text><text x="52" y="173" fill="#f4f8ff" font-family="Arial,sans-serif" font-size="48" font-weight="700" letter-spacing="-2">CISCO CCNA</text><text x="56" y="204" fill="#afc6e3" font-family="Arial,sans-serif" font-size="16" letter-spacing="2">200-301 PREPARATION</text>
+</svg>
