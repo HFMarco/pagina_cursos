@@ -3,34 +3,34 @@ const sampleLimitSeconds = 10;
 
 const courses = [
   {
-    id: 'redes', title: 'Redes desde cero', category: 'Networking', level: 'Inicial', duration: '2 h 30 min', lessons: 8,
-    theme: 'moss', mark: '01', label: 'INFRAESTRUCTURA',
-    shortDescription: 'Entiende cómo se conectan los dispositivos y cómo viajan los datos por una red.',
-    description: 'Construye una base práctica en redes: desde los conceptos esenciales hasta el direccionamiento y el diagnóstico de conectividad.',
-    introTitle: 'Bienvenido al laboratorio de redes',
-    introDescription: 'Este clip es temporal y sirve para probar la preview. Reemplázalo por la introducción real del curso.',
-    chapters: ['Introducción al curso', 'Modelo OSI y TCP/IP', 'Direccionamiento IPv4', 'Subnetting paso a paso', 'Switching y routing', 'DNS y DHCP', 'Diagnóstico de conectividad', 'Laboratorio final'],
-    outcomes: ['Explicar el recorrido de los datos usando OSI y TCP/IP.', 'Leer direcciones IPv4 y calcular subredes básicas.', 'Usar herramientas de diagnóstico para encontrar fallas comunes.']
+    id: 'fortinet', title: 'Fortinet: Secure Networking', category: 'Preparación Fortinet', certification: 'Ruta Fortinet NSE · Secure Networking', level: 'Inicial', duration: '4 h', lessons: 10,
+    theme: 'moss', mark: '01', label: 'FORTINET · SECURITY',
+    shortDescription: 'Prepárate en conceptos de seguridad de red, FortiGate y operación defensiva.',
+    description: 'Ruta introductoria para familiarizarte con los fundamentos de seguridad de red y las tareas esenciales de un entorno Fortinet. Verifica el temario oficial vigente antes de agendar una certificación.',
+    introTitle: 'Empieza tu ruta Fortinet',
+    introDescription: 'Conoce el entorno Fortinet, los conceptos base y el plan de estudio para avanzar hacia una certificación.',
+    chapters: ['Introducción a la ruta Fortinet', 'Conceptos de seguridad de red', 'Arquitectura y productos Fortinet', 'Primeros pasos con FortiGate', 'Políticas de firewall', 'NAT y control de aplicaciones', 'VPN y acceso remoto', 'Inspección y perfiles de seguridad', 'Monitoreo y resolución de problemas', 'Repaso y simulación de examen'],
+    outcomes: ['Reconocer componentes y conceptos del ecosistema Fortinet.', 'Comprender políticas de firewall y servicios de seguridad.', 'Organizar un plan de estudio orientado a los objetivos oficiales vigentes.']
   },
   {
-    id: 'ciberseguridad', title: 'Fundamentos de ciberseguridad', category: 'Seguridad defensiva', level: 'Inicial', duration: '3 h 15 min', lessons: 12,
-    theme: 'blue', mark: '02', label: 'DEFENSA DIGITAL',
-    shortDescription: 'Aprende principios de seguridad y reconoce amenazas frecuentes en entornos digitales.',
-    description: 'Una introducción práctica a la protección de cuentas, dispositivos y datos, con foco en prevención y respuesta básica.',
-    introTitle: 'Principios de seguridad digital',
-    introDescription: 'Esta preview temporal se reemplazará por la introducción grabada del curso.',
-    chapters: ['Introducción a la seguridad', 'Confidencialidad, integridad y disponibilidad', 'Amenazas y vulnerabilidades', 'Contraseñas y autenticación', 'Reconoce el phishing', 'Seguridad del navegador', 'Copias de seguridad', 'Actualizaciones seguras', 'Introducción a incidentes', 'Registro de evidencias', 'Plan de respuesta', 'Repaso final'],
-    outcomes: ['Distinguir amenazas, vulnerabilidades y riesgos.', 'Aplicar medidas básicas para proteger cuentas y dispositivos.', 'Reconocer señales de phishing y reportar incidentes de forma ordenada.']
+    id: 'ccna', title: 'Cisco CCNA: redes empresariales', category: 'Preparación CCNA', certification: 'Cisco CCNA (200-301)', level: 'Inicial · Intermedio', duration: '8 h', lessons: 12,
+    theme: 'blue', mark: '02', label: 'CISCO · CCNA',
+    shortDescription: 'Construye bases de redes y practica los temas centrales de la ruta CCNA.',
+    description: 'Estudia fundamentos de red, acceso, conectividad IP, servicios, seguridad y automatización con ejercicios guiados. La certificación oficial requiere rendir el examen correspondiente de Cisco.',
+    introTitle: 'Tu camino hacia CCNA',
+    introDescription: 'Una visión general del examen CCNA y de cómo abordaremos redes, configuración y diagnóstico.',
+    chapters: ['Introducción al examen CCNA 200-301', 'Fundamentos de redes y modelos', 'Ethernet y switching', 'VLAN y enlaces troncales', 'Direccionamiento IPv4 y subnetting', 'Conceptos de IPv6', 'Routing estático y dinámico', 'Servicios IP: DHCP, DNS y NAT', 'Fundamentos de seguridad', 'Wireless y acceso', 'Automatización y programabilidad', 'Laboratorio integrador y repaso'],
+    outcomes: ['Explicar fundamentos de redes y conectividad empresarial.', 'Interpretar direccionamiento IP y conceptos de switching y routing.', 'Practicar diagnóstico con una ruta alineada a los dominios publicados para CCNA.']
   },
   {
-    id: 'linux', title: 'Linux para seguridad', category: 'Herramientas', level: 'Inicial', duration: '2 h', lessons: 6,
-    theme: 'rose', mark: '03', label: 'TERMINAL Y SISTEMA',
-    shortDescription: 'Familiarízate con la terminal, los usuarios, permisos y herramientas esenciales.',
-    description: 'Aprende a moverte por Linux y administrar tareas comunes con una base útil para redes y ciberseguridad.',
-    introTitle: 'Tu entorno de trabajo',
-    introDescription: 'Esta preview temporal se reemplazará por la introducción grabada del curso.',
-    chapters: ['Introducción al entorno Linux', 'Comandos básicos de terminal', 'Archivos y directorios', 'Permisos y usuarios', 'Procesos y servicios', 'Laboratorio guiado'],
-    outcomes: ['Navegar el sistema de archivos desde la terminal.', 'Leer permisos y ejecutar comandos con criterio.', 'Usar herramientas base para observar procesos y servicios.']
+    id: 'mikrotik', title: 'MikroTik: routing y switching', category: 'Preparación MikroTik', certification: 'MTCNA · MikroTik Certified Network Associate', level: 'Inicial · Intermedio', duration: '6 h', lessons: 10,
+    theme: 'rose', mark: '03', label: 'MIKROTIK · ROUTING',
+    shortDescription: 'Practica RouterOS, direccionamiento, servicios y administración de redes.',
+    description: 'Ruta de preparación para comprender RouterOS y los fundamentos que suelen cubrirse en MTCNA, con prácticas de configuración y diagnóstico. Confirma la versión y el examen oficial vigentes con MikroTik Training.',
+    introTitle: 'Conoce RouterOS',
+    introDescription: 'Una introducción a RouterOS, el laboratorio y los objetivos de aprendizaje de esta ruta MikroTik.',
+    chapters: ['Introducción a la ruta MikroTik', 'Primer acceso y configuración RouterOS', 'Navegación por WinBox y terminal', 'Direcciones IP y DHCP', 'Bridging y switching básico', 'Routing estático', 'Firewall y NAT', 'Wireless y administración', 'Monitoreo y solución de problemas', 'Repaso orientado a MTCNA'],
+    outcomes: ['Configurar tareas esenciales en RouterOS.', 'Comprender direccionamiento, DHCP, routing y NAT.', 'Practicar diagnóstico básico para prepararte para la ruta MTCNA.']
   }
 ];
 
@@ -118,7 +118,7 @@ function renderCourses() {
           ${enrolled ? '<span class="enrolled-tag">MI CURSO</span>' : ''}
         </div>
         <div class="course-info">
-          <p class="course-category">${course.category}</p><h3>${course.title}</h3>
+          <p class="course-category">${course.category}</p><h3>${course.title}</h3><p class="course-certification">${course.certification}</p>
           <p class="course-summary">${course.shortDescription}</p>
           <div class="course-meta"><span>${course.level}</span><span>${course.duration}</span><span>${course.lessons} clases</span></div>
           <div class="course-card-actions"><span class="price-teaser">Precio por definir</span><button class="course-open" type="button" data-course-id="${course.id}">${enrolled ? 'Continuar' : 'Ver preview'} <span>→</span></button></div>
@@ -134,6 +134,7 @@ function renderCourse(course) {
   document.querySelector('#detail-category').textContent = `${course.category.toUpperCase()} · RUTA DE APRENDIZAJE`;
   document.querySelector('#detail-title').textContent = course.title;
   document.querySelector('#detail-description').textContent = course.description;
+  document.querySelector('#detail-certification').textContent = course.certification;
   document.querySelector('#detail-level').textContent = `Nivel ${course.level}`;
   document.querySelector('#detail-duration').textContent = course.duration;
   document.querySelector('#detail-lessons').textContent = `${course.lessons} clases`;
@@ -400,6 +401,19 @@ document.querySelector('#sign-out').addEventListener('click', async () => {
   if (error) { authMessage.textContent = formatAuthError(error); return; }
   authDialog.close();
   setRoute('inicio');
+});
+
+document.querySelector('#contact-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const fields = new FormData(event.currentTarget);
+  const name = String(fields.get('name') || '').trim();
+  const email = String(fields.get('email') || '').trim();
+  const course = String(fields.get('course') || 'Consulta general');
+  const message = String(fields.get('message') || '').trim();
+  const subject = encodeURIComponent(`Consulta ${course} · ${name}`);
+  const body = encodeURIComponent(`Nombre: ${name}\nCorreo: ${email}\nInterés: ${course}\n\n${message}`);
+  document.querySelector('#contact-feedback').textContent = 'Se abrirá tu aplicación de correo con el mensaje preparado. Revisa los datos y envíalo desde allí.';
+  window.location.href = `mailto:soporte@cyberaula.example?subject=${subject}&body=${body}`;
 });
 
 video.addEventListener('timeupdate', () => {

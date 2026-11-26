@@ -1,8 +1,8 @@
 # Cyber Aula — prototipo estático
 
-Prototipo de una academia de redes y ciberseguridad de un solo docente. No requiere instalación ni compilación: es HTML, CSS y JavaScript.
+Prototipo de una academia de redes y ciberseguridad de un solo docente, con rutas de preparación Fortinet, Cisco CCNA y MikroTik. No requiere instalación ni compilación: es HTML, CSS y JavaScript.
 
-La portada pública presenta el catálogo y la ficha de cada curso. Cualquier visitante puede ver la introducción de 10 segundos; las lecciones restantes quedan bloqueadas hasta tener matrícula. Al iniciar sesión se abre el espacio personal, una vista separada con sus cursos, certificados y soporte. Si no tiene cursos habilitados, aparece un mensaje de estado vacío. La barra superior cambia según la sesión.
+La portada pública presenta las rutas de certificación, beneficios de la academia, contacto, preguntas frecuentes y redes sociales. Cualquier visitante puede ver la introducción de 10 segundos; las lecciones restantes quedan bloqueadas hasta tener matrícula. Al iniciar sesión se abre el espacio personal, una vista separada con sus cursos, certificados y soporte. Si no tiene cursos habilitados, aparece un mensaje de estado vacío. La barra superior cambia según la sesión.
 
 ## Publicarlo en Cloudflare Pages
 
@@ -43,17 +43,21 @@ Si la terminal dice `fatal: not a git repository`, confirma que abriste la carpe
 
 ## Editar los cursos
 
-Los datos de ejemplo están al inicio de `app.js`, en el arreglo `courses`: títulos, categorías, niveles, duración, temario, descripción y resultados de aprendizaje. Cada ficha permite ver la preview; las lecciones adicionales quedan bloqueadas para visitantes y se habilitan en la interfaz al detectar una matrícula activa.
+Los datos de ejemplo están al inicio de `app.js`, en el arreglo `courses`: títulos, categorías, ruta de certificación, niveles, duración, temario, descripción y resultados de aprendizaje. Los IDs de curso son `fortinet`, `ccna` y `mikrotik`. Cada ficha permite ver la preview; las lecciones adicionales quedan bloqueadas para visitantes y se habilitan en la interfaz al detectar una matrícula activa. La preparación del curso no equivale a la certificación oficial: el alumno debe cumplir los requisitos y aprobar el examen correspondiente.
+
+Antes de grabar o publicar un temario definitivo, revisa los objetivos oficiales vigentes: [Fortinet Training & Certification](https://www.fortinet.com/training-certification), [Cisco CCNA](https://www.cisco.com/web/go/ccna/) y [MikroTik Training](https://mikrotik.com/training/about). Los programas y exámenes pueden actualizarse.
 
 La tarjeta de compra es ilustrativa: todavía no procesa pagos ni crea matrículas. Las matrículas y certificados se consultan en Supabase. El dashboard se actualiza automáticamente al recibir eventos Realtime; también vuelve a consultar los datos al regresar a la pestaña o ventana.
 
 ### Activar matrículas, certificados y actualizaciones automáticas
 
 1. En tu proyecto Supabase, abre **SQL Editor**, copia el contenido de `supabase-schema.sql` y ejecútalo. Crea las tablas `enrollments` y `certificates`, activa Row Level Security para que cada alumno solo pueda leer sus propios registros y publica las tablas para Realtime.
-2. Para probar el flujo sin pagos, abre **Table Editor → enrollments → Insert row**. En `user_id` coloca el UUID del alumno, que puedes copiar desde **Authentication → Users**. Usa un `course_id` exactamente como `redes`, `ciberseguridad` o `linux`, y `status` = `active`. Al guardar, el curso aparecerá en su espacio sin que tenga que pulsar F5.
+2. Para probar el flujo sin pagos, abre **Table Editor → enrollments → Insert row**. En `user_id` coloca el UUID del alumno, que puedes copiar desde **Authentication → Users**. Usa un `course_id` exactamente como `fortinet`, `ccna` o `mikrotik`, y `status` = `active`. Al guardar, el curso aparecerá en su espacio sin que tenga que pulsar F5.
 3. Los certificados se muestran al insertar un registro en `certificates` con el `user_id`, `course_id` y, opcionalmente, `certificate_url`.
 
 La página no permite que un alumno se otorgue una matrícula a sí mismo. Para la prueba, créala desde el panel de Supabase. Cuando integres pagos, el servidor o webhook de pago deberá crear el registro después de confirmar la transacción; no insertes matrículas desde el navegador.
+
+El formulario de contacto de demostración prepara un correo dirigido a `soporte@cyberaula.example`; no almacena ni envía datos a un servidor. El teléfono, WhatsApp y perfiles sociales son ejemplos: reemplázalos por los canales reales antes de publicar.
 
 Para cambiar el video de muestra, sustituye la URL de `demoVideo` en `app.js`. La prueba detiene el clip a los 10 segundos mediante `sampleLimitSeconds`. Al tener videos reales, cada lección debe guardar su propia URL y duración.
 

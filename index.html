@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Academia de redes y ciberseguridad: aprende, practica y protege lo digital.">
+  <meta name="description" content="Prepárate para rutas de certificación Fortinet, Cisco CCNA y MikroTik con clases prácticas y laboratorios guiados.">
   <meta name="theme-color" content="#071426">
-  <title>Cyber Aula | Redes y ciberseguridad</title>
+  <title>Cyber Aula | Certificaciones de redes y ciberseguridad</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="supabase-config.js" defer></script>
@@ -19,13 +19,16 @@
     <nav id="public-nav" class="top-nav" aria-label="Navegación principal">
       <a class="top-nav-link active" href="#inicio" data-route="inicio">Inicio</a>
       <a class="top-nav-link" href="#catalogo" data-route="catalogo">Cursos</a>
-      <a class="top-nav-link" href="#metodologia" data-route="metodologia">Metodología</a>
+      <a class="top-nav-link" href="#porque" data-route="porque">La academia</a>
+      <a class="top-nav-link" href="#contacto" data-route="contacto">Contacto</a>
+      <a class="top-nav-link" href="#faq" data-route="faq">FAQ</a>
     </nav>
     <nav id="member-nav" class="top-nav member-nav" aria-label="Mi espacio" hidden>
       <a class="top-nav-link" href="#alumno" data-route="alumno">Mis cursos</a>
       <a class="top-nav-link" href="#certificados" data-route="certificados">Certificados</a>
       <a class="top-nav-link" href="#soporte" data-route="soporte">Soporte</a>
       <a class="top-nav-link" href="#catalogo" data-route="catalogo">Explorar</a>
+      <a class="top-nav-link" href="#contacto" data-route="contacto">Contacto</a>
     </nav>
     <div class="header-actions">
       <button id="open-auth" class="access-button" type="button">Acceder</button>
@@ -39,16 +42,16 @@
         <div class="hero-glow glow-cyan"></div><div class="hero-glow glow-blue"></div>
         <div class="hero-grid-pattern" aria-hidden="true"></div>
         <div class="hero-copy">
-          <div class="hero-kicker"><span class="live-dot"></span> ACADEMIA DE REDES Y CIBERSEGURIDAD</div>
-          <h1>Aprende a conectar.<br><span>Prepárate para defender.</span></h1>
-          <p>Rutas prácticas para entender redes, fortalecer sistemas y desarrollar habilidades de seguridad digital, paso a paso.</p>
-          <div class="hero-actions"><a class="button-primary" href="#catalogo" data-route="catalogo">Explorar cursos <span>↗</span></a><a class="button-quiet" href="#metodologia" data-route="metodologia">Conoce la metodología <span>↓</span></a></div>
-          <div class="hero-proof"><div class="proof-avatars"><span>M</span><span>+</span></div><span>Clases guiadas por un instructor</span><i></i><span>Aprende a tu ritmo</span></div>
+          <div class="hero-kicker"><span class="live-dot"></span> RUTAS DE PREPARACIÓN PARA CERTIFICACIONES</div>
+          <h1>Conecta tu talento.<br><span>Certifica tu futuro.</span></h1>
+          <p>Prepárate para Fortinet, Cisco CCNA y MikroTik con clases guiadas, laboratorios de redes y un plan de estudio que puedes seguir a tu ritmo.</p>
+          <div class="hero-actions"><a class="button-primary" href="#catalogo" data-route="catalogo">Ver cursos <span>↗</span></a><a class="button-quiet" href="#contacto" data-route="contacto">Habla con nosotros <span>↓</span></a></div>
+          <div class="hero-proof"><div class="proof-avatars"><span>M</span><span>+</span></div><span>Un instructor, acompañamiento directo</span><i></i><span>Práctica paso a paso</span></div>
         </div>
         <div class="hero-visual" aria-label="Ilustración abstracta de redes digitales">
           <div class="visual-orbit orbit-a"></div><div class="visual-orbit orbit-b"></div><div class="visual-orbit orbit-c"></div>
           <div class="network-node node-a"></div><div class="network-node node-b"></div><div class="network-node node-c"></div><div class="network-node node-d"></div>
-          <div class="core-card"><span class="core-mark">⌘</span><span class="core-title">CYBER<br>DEFENSE</span><span class="core-status"><i></i> SYSTEM ONLINE</span></div>
+          <div class="core-card"><span class="core-mark">⌘</span><span class="core-title">LEARN<br>· LAB · CERT</span><span class="core-status"><i></i> NETWORK ONLINE</span></div>
           <span class="visual-code code-a">1010 / 0110</span><span class="visual-code code-b">10.0.24.1</span><span class="visual-tag">LEARN · PRACTICE · DEFEND</span>
         </div>
         <div class="hero-index">01 <span>—</span> 03</div>
@@ -56,23 +59,48 @@
 
       <section id="catalogo" class="content-section catalog-section">
         <div class="section-heading">
-          <div><p class="eyebrow">RUTAS DE APRENDIZAJE</p><h2>Elige tu próximo reto.</h2><p class="section-subtitle">Mira la introducción y revisa el programa antes de elegir.</p></div>
-          <span class="catalog-count"><b>03</b> CURSOS DE INICIO</span>
+          <div><p class="eyebrow">RUTAS DE APRENDIZAJE</p><h2>Elige tu próximo reto.</h2><p class="section-subtitle">Mira la introducción y revisa el programa antes de elegir. Las rutas preparan para los exámenes; la credencial se obtiene al aprobar la evaluación oficial.</p></div>
+          <span class="catalog-count"><b>03</b> RUTAS DE CERTIFICACIÓN</span>
         </div>
         <div id="course-grid" class="course-grid" aria-live="polite"></div>
       </section>
 
-      <section id="metodologia" class="method-section">
-        <div class="method-intro"><p class="eyebrow">APRENDIZAJE APLICADO</p><h2>De los fundamentos<br>a la práctica real.</h2><p>Lecciones guiadas, conceptos claros y un camino progresivo desde las bases hasta el análisis de escenarios.</p></div>
-        <div class="method-steps"><article><span>01</span><div><h3>Comprende</h3><p>Conceptos explicados en clases cortas y directas.</p></div></article><article><span>02</span><div><h3>Practica</h3><p>Ejercicios y laboratorios para fijar lo aprendido.</p></div></article><article><span>03</span><div><h3>Avanza</h3><p>Completa la ruta y demuestra tu progreso.</p></div></article></div>
+      <section id="porque" class="why-section">
+        <div class="why-copy"><p class="eyebrow">¿POR QUÉ ELEGIR ESTA ACADEMIA?</p><h2>Aprende con propósito.<br><span>Practica para avanzar.</span></h2><p>Una ruta clara conecta lo que estudias con las habilidades que necesitas en redes y seguridad. Recibe guía directa de un instructor y convierte cada tema en práctica.</p><a class="text-link" href="#metodologia" data-route="metodologia">Conoce cómo aprendemos <span>→</span></a></div>
+        <div class="why-visual" aria-label="Ilustración de una ruta de aprendizaje desde conceptos a certificación">
+          <div class="why-visual-grid"></div><div class="route-line"></div>
+          <div class="route-point point-one"><b>01</b><span>APRENDE</span></div><div class="route-point point-two"><b>02</b><span>CONFIGURA</span></div><div class="route-point point-three"><b>03</b><span>CERTIFICA</span></div>
+          <div class="why-terminal"><span>network-lab / progreso</span><code>&gt; práctica real<br>&gt; avance medible<br>&gt; siguiente nivel_</code></div>
+        </div>
+        <div id="metodologia" class="method-steps"><article><span>01</span><div><h3>Comprende</h3><p>Conceptos alineados a objetivos de certificación.</p></div></article><article><span>02</span><div><h3>Practica</h3><p>Laboratorios para configurar y diagnosticar redes.</p></div></article><article><span>03</span><div><h3>Avanza</h3><p>Lecciones por etapas, con una preview abierta antes de matricularte.</p></div></article></div>
       </section>
+
+      <section class="career-cta"><div><p class="eyebrow">TU PRÓXIMO PASO EMPIEZA AQUÍ</p><h2>¿Listo para impulsar tu carrera?</h2><p>Únete a Cyber Aula y empieza a construir habilidades que puedas demostrar.</p></div><div class="career-actions"><a class="button-primary" href="#catalogo" data-route="catalogo">Ver cursos <span>↗</span></a><a class="button-secondary" href="#contacto" data-route="contacto">Contáctanos <span>→</span></a></div><div class="career-orbit" aria-hidden="true"></div></section>
+
+      <section id="contacto" class="contact-section">
+        <div class="contact-intro"><p class="eyebrow">CONTACTO Y ACOMPAÑAMIENTO</p><h2>Estamos para ayudarte.</h2><p>Cuéntanos qué certificación te interesa o escríbenos si necesitas orientación sobre los cursos.</p><div class="contact-details"><a href="tel:+51900000000"><span class="contact-icon">☎</span><span><small>Teléfono de ejemplo</small><strong>+51 900 000 000</strong></span></a><a href="mailto:soporte@cyberaula.example"><span class="contact-icon">@</span><span><small>Correo de soporte</small><strong>soporte@cyberaula.example</strong></span></a><div><span class="contact-icon">◷</span><span><small>Horario de atención</small><strong>24/7 · Todos los días</strong></span></div></div><p class="placeholder-note">Teléfono y correo de muestra: reemplázalos por tus datos antes de publicar.</p></div>
+        <div class="contact-form-card"><h3>Envíanos un mensaje</h3><p>Responderemos a tu consulta por correo.</p><form id="contact-form" class="contact-form"><label>Nombre<input name="name" type="text" autocomplete="name" placeholder="Tu nombre" required></label><label>Correo electrónico<input name="email" type="email" autocomplete="email" placeholder="nombre@correo.com" required></label><label>¿Qué te interesa?<select name="course"><option value="Consulta general">Consulta general</option><option>Fortinet</option><option>Cisco CCNA</option><option>MikroTik</option></select></label><label>Mensaje<textarea name="message" rows="4" placeholder="Cuéntanos cómo podemos ayudarte" required></textarea></label><button class="button-primary" type="submit">Preparar mensaje <span>↗</span></button><p id="contact-feedback" class="contact-feedback" role="status" aria-live="polite">El formulario abrirá tu aplicación de correo para enviar la consulta.</p></form></div>
+      </section>
+
+      <section class="direct-contact"><div><p class="eyebrow">CONTACTO DIRECTO</p><h2>Elige cómo comunicarte.</h2></div><div class="direct-buttons"><a class="direct-button whatsapp-button" href="https://wa.me/51900000000" target="_blank" rel="noopener"><span>◉</span> WhatsApp</a><a class="direct-button" href="tel:+51900000000"><span>☎</span> Llamar</a><a class="direct-button" href="mailto:soporte@cyberaula.example"><span>@</span> Email</a></div><p class="placeholder-note">Los enlaces de contacto son de ejemplo y deben actualizarse antes de publicar.</p></section>
+
+      <section id="faq" class="faq-section"><div class="section-heading"><div><p class="eyebrow">PREGUNTAS FRECUENTES</p><h2>Resolvamos tus dudas.</h2></div></div><div class="faq-list">
+        <details><summary>¿Estos cursos otorgan la certificación oficial?</summary><p>Los cursos son rutas de preparación. La certificación oficial se obtiene al cumplir los requisitos y aprobar el examen del fabricante o entidad certificadora.</p></details>
+        <details><summary>¿Puedo ver una clase antes de matricularme?</summary><p>Sí. Cada curso tiene una introducción de muestra. El resto del programa se habilita con una matrícula activa.</p></details>
+        <details><summary>¿Necesito equipos físicos para practicar?</summary><p>Algunas prácticas se pueden realizar con simuladores o laboratorios virtuales. Los requisitos concretos se indicarán en cada curso.</p></details>
+        <details><summary>¿Cuánto tiempo tengo para completar el curso?</summary><p>El acceso y el ritmo de estudio dependerán de las condiciones que se publiquen para cada curso.</p></details>
+        <details><summary>¿Cómo recibo ayuda si tengo una consulta?</summary><p>Puedes escribir al correo de soporte o usar los botones de contacto directo. El horario indicado es 24/7.</p></details>
+      </div></section>
+
+      <section class="social-section"><div><p class="eyebrow">SIGUE APRENDIENDO CON NOSOTROS</p><h2>Síguenos en redes sociales.</h2><p>Pronto compartiremos novedades, consejos y nuevas rutas de certificación.</p></div><div class="social-buttons"><a href="https://www.instagram.com/tuacademia/" target="_blank" rel="noopener" aria-label="Instagram">Instagram <span>↗</span></a><a href="https://www.facebook.com/tuacademia/" target="_blank" rel="noopener" aria-label="Facebook">Facebook <span>↗</span></a><a href="https://www.linkedin.com/company/tuacademia/" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn <span>↗</span></a><a href="https://www.youtube.com/@tuacademia" target="_blank" rel="noopener" aria-label="YouTube">YouTube <span>↗</span></a></div><p class="placeholder-note">Los perfiles sociales son ejemplos; cambia sus enlaces por los de la academia.</p></section>
+
       <footer class="site-footer"><a class="footer-brand" href="#inicio" data-route="inicio">cyberaula</a><span>© 2026 Academia de Marco</span><span>Redes · Seguridad · Práctica</span></footer>
     </div>
 
     <section id="course-view" class="page-view course-view" hidden>
       <div class="course-back-row"><button id="back-to-home" class="back-button" type="button">← Todos los cursos</button><span id="course-breadcrumb" class="breadcrumb">Catálogo / Preview</span></div>
       <section class="course-detail-hero">
-        <div class="course-detail-copy"><p id="detail-category" class="eyebrow">RUTA DE APRENDIZAJE</p><h1 id="detail-title">Curso</h1><p id="detail-description" class="detail-description"></p><div class="course-facts"><span id="detail-level"></span><span id="detail-duration"></span><span id="detail-lessons"></span><span>Certificado de finalización</span></div></div>
+        <div class="course-detail-copy"><p id="detail-category" class="eyebrow">RUTA DE APRENDIZAJE</p><h1 id="detail-title">Curso</h1><p id="detail-description" class="detail-description"></p><div class="course-facts"><span id="detail-certification"></span><span id="detail-level"></span><span id="detail-duration"></span><span id="detail-lessons"></span></div></div>
         <aside class="purchase-card"><p class="eyebrow">ACCESO AL CURSO</p><div class="price-label">Inversión <strong>Por definir</strong></div><button id="purchase-button" class="button-primary purchase-button" type="button">Consultar acceso <span>↗</span></button><p class="purchase-note">El acceso se habilitará después de confirmar la compra.</p></aside>
       </section>
       <div class="course-content-layout">
@@ -90,7 +118,7 @@
       <section id="mis-cursos" class="dashboard-section"><div class="section-heading"><div><p class="eyebrow">TU FORMACIÓN</p><h2>Mis cursos</h2></div><div class="dashboard-heading-actions"><span class="enrollment-count"><b id="enrollment-count">00</b> ACTIVOS</span><a class="text-link" href="#catalogo" data-route="catalogo">Explorar cursos <span>↗</span></a></div></div><div id="enrollment-status" class="data-status" hidden></div><div id="my-courses-empty" class="dashboard-empty"><span class="empty-icon">▤</span><h3>Aún no tienes cursos habilitados.</h3><p>Cuando se confirme una matrícula, el curso aparecerá aquí.</p><a class="button-primary" href="#catalogo" data-route="catalogo">Ver catálogo <span>↗</span></a></div><div id="my-courses-list" class="enrolled-grid" hidden></div></section>
       <section class="dashboard-lower-grid">
         <article id="certificados" class="dashboard-panel"><div class="section-heading compact-heading"><div><p class="eyebrow">TUS LOGROS</p><h2>Mis certificados</h2></div><span class="panel-icon">✧</span></div><div id="certificates-empty" class="panel-empty"><p>Al completar un curso, el certificado estará disponible aquí.</p><span>Todavía no hay certificados.</span></div><div id="certificates-list" class="certificates-list" hidden></div></article>
-        <article id="soporte" class="dashboard-panel support-panel"><div class="section-heading compact-heading"><div><p class="eyebrow">TE ACOMPAÑAMOS</p><h2>Soporte</h2></div><span class="panel-icon">?</span></div><p>Ayuda sobre tu cuenta, el acceso a clases y tus certificados.</p><div class="support-topics"><span>Cuenta y acceso</span><span>Clases y videos</span><span>Compras y matrículas</span></div><div class="support-status"><i></i> Centro de ayuda en preparación</div></article>
+        <article id="soporte" class="dashboard-panel support-panel"><div class="section-heading compact-heading"><div><p class="eyebrow">TE ACOMPAÑAMOS</p><h2>Soporte</h2></div><span class="panel-icon">?</span></div><p>Ayuda sobre tu cuenta, el acceso a clases y tus certificados.</p><div class="support-topics"><span>Cuenta y acceso</span><span>Clases y videos</span><span>Compras y matrículas</span></div><div class="support-status"><i></i> Atención de ejemplo · 24/7</div><div class="student-support-links"><a href="mailto:soporte@cyberaula.example">Email ↗</a><a href="https://wa.me/51900000000" target="_blank" rel="noopener">WhatsApp ↗</a></div></article>
       </section>
       <footer class="site-footer"><a class="footer-brand" href="#inicio" data-route="inicio">cyberaula</a><span>Tu espacio personal</span><span>© 2026 Academia de Marco</span></footer>
     </section>
