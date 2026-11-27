@@ -51,14 +51,16 @@ El campo `pricePen` fija el precio que se muestra en las tarjetas y en la ficha 
 
 Antes de grabar o publicar un temario definitivo, revisa los objetivos oficiales vigentes: [Fortinet Training & Certification](https://www.fortinet.com/training-certification), [Cisco CCNA](https://www.cisco.com/web/go/ccna/) y [MikroTik Training](https://mikrotik.com/training/about). Los programas y exámenes pueden actualizarse.
 
-El botón **Simular compra** crea un registro de prueba de S/ 0.10 en `demo_purchases`. No cobra dinero, no está conectado a Culqi y mantiene el acceso asociado a la cuenta Supabase. Las matrículas reales continúan en `enrollments`. El dashboard se actualiza automáticamente mediante Realtime y al regresar a la pestaña.
+El botón **Simular compra** crea un registro de prueba de S/ 0.10 en `demo_purchases`. No cobra dinero, no está conectado a Culqi y mantiene el acceso asociado a la cuenta Supabase. Las matrículas reales continúan en `enrollments`. El avance se guarda por lección en `lesson_progress`; los comentarios se guardan en `course_comments` por curso y lección. RLS permite acceder a estos datos solo con una matrícula activa o compra de prueba del curso. El dashboard y comentarios reciben actualizaciones mediante Realtime.
 
 ### Activar matrículas, certificados y actualizaciones automáticas
 
-1. En tu proyecto Supabase, abre **SQL Editor**, copia el contenido actualizado de `supabase-schema.sql` y ejecútalo. Si las tablas ya existen, el script crea la tabla nueva `demo_purchases` y configura sus permisos.
+1. En tu proyecto Supabase, abre **SQL Editor**, copia el contenido actualizado de `supabase-schema.sql` y ejecútalo. Si ya ejecutaste la versión anterior, vuelve a ejecutar el archivo completo: crea `lesson_progress` y `course_comments` y configura sus permisos sin borrar los registros existentes.
 2. Publica la versión actualizada del sitio y entra con un usuario de prueba.
 3. Abre **Cursos → Ver temario → Simular compra**. Inicia sesión si te lo pide y vuelve al curso. La compra queda guardada en Supabase; si vuelves a entrar con esa cuenta, el acceso sigue habilitado. En **Table Editor → demo_purchases** puedes revisar el registro.
-4. Los certificados se muestran al insertar un registro en `certificates` con `user_id`, `course_id` y, opcionalmente, `certificate_url`.
+4. En el curso, abre una lección y pulsa **Marcar clase como completada**. El porcentaje se calcula sobre videos y teorías; los registros se guardan en `lesson_progress`. El botón permite desmarcar una lección si hace falta.
+5. Cada lección tiene comentarios propios. Los alumnos con acceso a ese curso pueden leer y publicar comentarios; se guardan en `course_comments`.
+6. Los certificados se muestran al insertar un registro en `certificates` con `user_id`, `course_id` y, opcionalmente, `certificate_url`.
 
 La compra simulada es deliberadamente accesible para cualquier usuario autenticado: úsala solo para probar. No la confundas con una matrícula pagada. Cuando integres Culqi, el servidor/webhook debe validar la transacción y crear el registro de matrícula; desactiva o elimina `demo_purchases` antes de vender.
 

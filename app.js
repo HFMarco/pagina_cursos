@@ -174,11 +174,15 @@ const supabaseClient = hasSupabaseConfig ? window.supabase.createClient(authConf
 
 let activeSession = null;
 let selectedCourse = null;
+let selectedLesson = null;
 let authReturnRoute = null;
 let enrolledCourseIds = new Set();
+let progressByCourse = new Map();
 let enrollmentChannel = null;
 let certificateChannel = null;
 let demoPurchaseChannel = null;
+let lessonProgressChannel = null;
+let lessonCommentsChannel = null;
 
 function setRoute(route, { replace = false, scrollTo = true } = {}) {
   const cleanRoute = route.replace(/^#/, '');
@@ -284,6 +288,7 @@ function renderCourse(course) {
   document.querySelector('.syllabus-footnote').textContent = enrolled ? 'Acceso habilitado para esta cuenta.' : 'Las lecciones y su contenido están bloqueados hasta tener acceso.';
   document.querySelector('#back-to-home').textContent = enrolled ? '← Mis cursos' : '← Cursos';
   document.querySelector('#detail-back-footer').textContent = enrolled ? 'Volver a mis cursos →' : 'Volver al catálogo →';
+  document.querySelector('#course-progress-panel').hidden = !enrolled;
   const theoryPanel = document.querySelector('#lesson-theory');
   theoryPanel.hidden = true;
   theoryPanel.textContent = '';
@@ -292,11 +297,23 @@ function renderCourse(course) {
   video.querySelector('source').removeAttribute('src');
   video.load();
   renderLessons(course, enrolled);
+  if (enrolled) updateCourseProgress(course);
+  else {
+    selectedLesson = null;
+    document.querySelector('#lesson-completion').hidden = true;
+    document.querySelector('#lesson-comments-card').hidden = true;
+  }
 }
 
 function getCourseLessons(course) {
-  if (course.modules) return course.modules.flatMap((module) => module.lessons.map((lesson) => ({ ...lesson, module: module.title })));
-  return course.chapters.map((title, index) => ({ type: 'video', title: `${index + 1}. Clase: ${title}`, description: 'La lección se publicará aquí.' }));
+  if (course.modules) {
+    return course.modules.flatMap((module) => module.lessons.map((lesson) => ({
+      ...lesson,
+      module: module.title,
+      lessonId: lesson.id || lesson.title.match(/^(\d+\.\d+)/)?.[1] || lesson.title
+    })));
+  }
+  return course.chapters.map((title, index) => ({ type: 'video', lessonId: String(index + 1), title: `${index + 1}. Clase: ${title}`, description: 'La lección se publicará aquí.' }));
 }
 
 function renderLessons(course, enrolled) {
@@ -306,8 +323,10 @@ function renderLessons(course, enrolled) {
     const heading = lesson.module !== moduleHeading ? `<li class="lesson-module-heading">${lesson.module || ''}</li>` : '';
     moduleHeading = lesson.module || '';
     const locked = !enrolled;
-    const icon = locked ? '🔒' : lesson.type === 'video' ? '▶' : 'T';
-    return `${heading}<li><button class="lesson-item ${locked ? 'locked' : index === 0 ? 'current' : 'included'}" type="button" data-lesson-index="${index}"><span class="lesson-number">${icon}</span><span class="lesson-name">${lesson.title}</span><span class="lesson-duration">${locked ? 'Bloqueada' : lesson.type === 'video' ? 'Video' : 'Teoría'}</span></button></li>`;
+    const completed = !locked && isLessonComplete(course.id, lesson.lessonId);
+    const icon = locked ? '🔒' : completed ? '✓' : lesson.type === 'video' ? '▶' : 'T';
+    const status = locked ? 'Bloqueada' : completed ? 'Completada' : lesson.type === 'video' ? 'Video' : 'Teoría';
+    return `${heading}<li><button class="lesson-item ${locked ? 'locked' : completed ? 'completed' : index === 0 ? 'current' : 'included'}" type="button" data-lesson-index="${index}"><span class="lesson-number">${icon}</span><span class="lesson-name">${lesson.title}</span><span class="lesson-duration">${status}</span></button></li>`;
   }).join('');
 
   lessonList.querySelectorAll('[data-lesson-index]').forEach((button) => button.addEventListener('click', () => {
@@ -329,6 +348,8 @@ function renderLessons(course, enrolled) {
 }
 
 function selectLesson(course, lesson, button) {
+  selectedCourse = course;
+  selectedLesson = lesson;
   lessonList.querySelectorAll('.lesson-item').forEach((item) => item.classList.remove('current'));
   button.classList.add('current');
   document.querySelector('#lesson-kicker').textContent = `${lesson.type === 'video' ? 'CLASE EN VIDEO' : 'MATERIAL TEÓRICO'} · ${course.category.toUpperCase()}`;
@@ -349,6 +370,180 @@ function selectLesson(course, lesson, button) {
   } else {
     videoError.hidden = true;
   }
+  updateCompletionButton(course, lesson);
+  document.querySelector('#lesson-comments-card').hidden = false;
+  subscribeToLessonComments(course, lesson);
+  loadLessonComments(course, lesson);
+}
+
+function getCourseProgress(course) {
+  const lessons = getCourseLessons(course);
+  const completed = progressByCourse.get(course.id) || new Set();
+  const completedCount = lessons.filter((lesson) => completed.has(lesson.lessonId)).length;
+  const percent = lessons.length ? Math.round((completedCount / lessons.length) * 100) : 0;
+  return { completedCount, total: lessons.length, percent };
+}
+
+function isLessonComplete(courseId, lessonId) {
+  return progressByCourse.get(courseId)?.has(lessonId) || false;
+}
+
+function updateCourseProgress(course) {
+  const { completedCount, total, percent } = getCourseProgress(course);
+  document.querySelector('#course-progress-percent').textContent = `${percent}%`;
+  document.querySelector('#course-progress-bar').value = percent;
+  document.querySelector('#course-progress-count').textContent = `${completedCount} de ${total} lecciones completadas`;
+  document.querySelectorAll(`[data-course-progress="${course.id}"]`).forEach((element) => {
+    element.textContent = `${percent}%`;
+  });
+  document.querySelectorAll(`[data-course-progress-bar="${course.id}"]`).forEach((element) => {
+    element.style.width = `${percent}%`;
+  });
+}
+
+function updateCompletionButton(course, lesson) {
+  const complete = isLessonComplete(course.id, lesson.lessonId);
+  document.querySelector('#complete-lesson-button').textContent = complete ? 'Desmarcar como completada' : 'Marcar clase como completada';
+  document.querySelector('#lesson-completion-message').textContent = complete
+    ? 'Esta lección está marcada como completada y guardada en tu cuenta.'
+    : 'Al marcarla, se guardará tu avance en esta cuenta.';
+  document.querySelector('#lesson-completion').hidden = false;
+}
+
+async function toggleLessonCompletion() {
+  if (!activeSession?.user || !selectedCourse || !selectedLesson || !supabaseClient) return;
+  const button = document.querySelector('#complete-lesson-button');
+  const wasComplete = isLessonComplete(selectedCourse.id, selectedLesson.lessonId);
+  button.disabled = true;
+  const query = supabaseClient.from('lesson_progress');
+  const result = wasComplete
+    ? await query.delete().eq('user_id', activeSession.user.id).eq('course_id', selectedCourse.id).eq('lesson_id', selectedLesson.lessonId)
+    : await query.insert({ user_id: activeSession.user.id, course_id: selectedCourse.id, lesson_id: selectedLesson.lessonId });
+  button.disabled = false;
+  if (result.error && !(result.error.code === '23505' && !wasComplete)) {
+    document.querySelector('#lesson-completion-message').textContent = 'No se pudo guardar el avance. Ejecuta el SQL actualizado en Supabase e inténtalo otra vez.';
+    return;
+  }
+  const completed = progressByCourse.get(selectedCourse.id) || new Set();
+  if (wasComplete) completed.delete(selectedLesson.lessonId);
+  else completed.add(selectedLesson.lessonId);
+  progressByCourse.set(selectedCourse.id, completed);
+  updateCompletionButton(selectedCourse, selectedLesson);
+  updateCourseProgress(selectedCourse);
+  updateLessonListStatus(selectedCourse);
+  renderStudentCourseCards();
+}
+
+function updateLessonListStatus(course) {
+  const lessons = getCourseLessons(course);
+  const currentIndex = lessons.findIndex((lesson) => lesson.lessonId === selectedLesson?.lessonId);
+  lessonList.querySelectorAll('[data-lesson-index]').forEach((button) => {
+    const index = Number(button.dataset.lessonIndex);
+    const lesson = lessons[index];
+    const completed = isLessonComplete(course.id, lesson.lessonId);
+    const isCurrent = index === currentIndex;
+    button.classList.toggle('current', isCurrent);
+    button.classList.toggle('completed', completed);
+    button.classList.toggle('included', !completed && !isCurrent);
+    button.querySelector('.lesson-number').textContent = completed ? '✓' : lesson.type === 'video' ? '▶' : 'T';
+    button.querySelector('.lesson-duration').textContent = completed ? 'Completada' : lesson.type === 'video' ? 'Video' : 'Teoría';
+  });
+}
+
+function renderStudentCourseCards() {
+  const list = document.querySelector('#my-courses-list');
+  const empty = document.querySelector('#my-courses-empty');
+  const enrolledCourses = courses.filter((course) => enrolledCourseIds.has(course.id));
+  document.querySelector('#enrollment-count').textContent = String(enrolledCourses.length).padStart(2, '0');
+  empty.hidden = enrolledCourses.length > 0;
+  list.hidden = enrolledCourses.length === 0;
+  if (!enrolledCourses.length) {
+    list.replaceChildren();
+    return;
+  }
+  list.innerHTML = enrolledCourses.map((course) => {
+    const { percent } = getCourseProgress(course);
+    return `<article class="enrolled-course-card ${course.theme}"><div class="enrolled-cover"><span>${course.mark}</span><i>ACCESS ACTIVE</i></div><div class="enrolled-course-copy"><p class="course-category">${course.category}</p><h3>${course.title}</h3><p>${course.shortDescription}</p><div class="student-course-progress"><div><span>Avance</span><strong data-course-progress="${course.id}">${percent}%</strong></div><div class="student-course-progress-track"><span data-course-progress-bar="${course.id}" style="width:${percent}%"></span></div></div><button class="course-open" type="button" data-enrolled-course="${course.id}">Entrar al curso <span>→</span></button></div></article>`;
+  }).join('');
+  list.querySelectorAll('[data-enrolled-course]').forEach((button) => button.addEventListener('click', () => setRoute(`curso/${button.dataset.enrolledCourse}`)));
+}
+
+async function loadLessonComments(course, lesson) {
+  const status = document.querySelector('#comments-status');
+  const list = document.querySelector('#lesson-comments-list');
+  const count = document.querySelector('#lesson-comments-count');
+  list.replaceChildren();
+  count.textContent = '…';
+  status.textContent = 'Cargando comentarios…';
+  if (!supabaseClient || !activeSession?.user) {
+    status.textContent = 'Inicia sesión con acceso al curso para ver y publicar comentarios.';
+    count.textContent = '0';
+    return;
+  }
+  const { data, error } = await supabaseClient.from('course_comments')
+    .select('id, user_id, body, created_at')
+    .eq('course_id', course.id)
+    .eq('lesson_id', lesson.lessonId)
+    .order('created_at', { ascending: true });
+  if (!activeSession?.user || selectedCourse?.id !== course.id || selectedLesson?.lessonId !== lesson.lessonId) return;
+  if (error) {
+    status.textContent = 'No se pudieron cargar los comentarios. Ejecuta el SQL actualizado en Supabase.';
+    count.textContent = '0';
+    return;
+  }
+  const comments = data || [];
+  count.textContent = String(comments.length);
+  status.textContent = comments.length ? '' : 'Aún no hay comentarios para esta lección. Puedes iniciar la conversación.';
+  comments.forEach((comment) => {
+    const article = document.createElement('article');
+    article.className = 'lesson-comment';
+    const header = document.createElement('div');
+    header.className = 'lesson-comment-meta';
+    const author = document.createElement('strong');
+    author.textContent = comment.user_id === activeSession.user.id ? 'Tú' : `Estudiante ${comment.user_id.slice(0, 6)}`;
+    const time = document.createElement('time');
+    time.dateTime = comment.created_at;
+    time.textContent = comment.created_at ? new Date(comment.created_at).toLocaleString('es-PE', { dateStyle: 'medium', timeStyle: 'short' }) : 'Ahora';
+    const body = document.createElement('p');
+    body.textContent = comment.body;
+    header.append(author, time);
+    article.append(header, body);
+    list.append(article);
+  });
+}
+
+function subscribeToLessonComments(course, lesson) {
+  if (!supabaseClient || !activeSession?.user) return;
+  if (lessonCommentsChannel) supabaseClient.removeChannel(lessonCommentsChannel);
+  lessonCommentsChannel = supabaseClient.channel(`comments-${course.id}-${lesson.lessonId}-${activeSession.user.id}`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'course_comments', filter: `course_id=eq.${course.id}` }, () => {
+      if (selectedCourse?.id === course.id && selectedLesson?.lessonId === lesson.lessonId) loadLessonComments(course, lesson);
+    })
+    .subscribe();
+}
+
+async function publishLessonComment(event) {
+  event.preventDefault();
+  if (!activeSession?.user || !selectedCourse || !selectedLesson || !supabaseClient) return;
+  const form = event.currentTarget;
+  const button = form.querySelector('button[type="submit"]');
+  const body = String(new FormData(form).get('body') || '').trim();
+  if (!body) return;
+  button.disabled = true;
+  document.querySelector('#comments-status').textContent = 'Publicando…';
+  const { error } = await supabaseClient.from('course_comments').insert({
+    user_id: activeSession.user.id,
+    course_id: selectedCourse.id,
+    lesson_id: selectedLesson.lessonId,
+    body
+  });
+  button.disabled = false;
+  if (error) {
+    document.querySelector('#comments-status').textContent = 'No se pudo publicar. Ejecuta el SQL actualizado en Supabase y vuelve a intentar.';
+    return;
+  }
+  form.reset();
+  await loadLessonComments(selectedCourse, selectedLesson);
 }
 
 function openPurchaseDialog(course = selectedCourse) {
@@ -460,11 +655,20 @@ async function loadStudentData(user) {
   empty.hidden = false;
   certEmpty.hidden = false;
 
-  const [enrollmentResult, certificateResult] = await Promise.all([
+  const [enrollmentResult, certificateResult, demoPurchaseResult, progressResult] = await Promise.all([
     supabaseClient.from('enrollments').select('course_id, status, purchased_at').eq('user_id', user.id).eq('status', 'active'),
-    supabaseClient.from('certificates').select('course_id, certificate_url, issued_at').eq('user_id', user.id)
+    supabaseClient.from('certificates').select('course_id, certificate_url, issued_at').eq('user_id', user.id),
+    supabaseClient.from('demo_purchases').select('course_id, amount_pen, purchased_at').eq('user_id', user.id).eq('status', 'completed'),
+    supabaseClient.from('lesson_progress').select('course_id, lesson_id').eq('user_id', user.id)
   ]);
-  const demoPurchaseResult = await supabaseClient.from('demo_purchases').select('course_id, amount_pen, purchased_at').eq('user_id', user.id).eq('status', 'completed');
+  progressByCourse = new Map();
+  if (!progressResult.error) {
+    for (const row of progressResult.data || []) {
+      const completed = progressByCourse.get(row.course_id) || new Set();
+      completed.add(row.lesson_id);
+      progressByCourse.set(row.course_id, completed);
+    }
+  }
 
   if (enrollmentResult.error) {
     status.textContent = 'No se pudo leer tu matrícula. Revisa la tabla enrollments y sus políticas en Supabase.';
@@ -474,19 +678,15 @@ async function loadStudentData(user) {
     const rows = enrollmentResult.data || [];
     const demoRows = demoPurchaseResult.error ? [] : (demoPurchaseResult.data || []);
     enrolledCourseIds = new Set([...rows, ...demoRows].map((row) => row.course_id));
-    const accessRows = [...rows, ...demoRows.filter((demo) => !rows.some((row) => row.course_id === demo.course_id))];
-    const enrolledCourses = accessRows.map((row) => ({ ...courses.find((course) => course.id === row.course_id), purchasedAt: row.purchased_at, isDemo: demoRows.some((demo) => demo.course_id === row.course_id) && !rows.some((enrollment) => enrollment.course_id === row.course_id) })).filter((course) => course.id);
-    document.querySelector('#enrollment-count').textContent = String(enrolledCourses.length).padStart(2, '0');
-    if (enrolledCourses.length) {
-      empty.hidden = true;
-      list.hidden = false;
-      list.innerHTML = enrolledCourses.map((course) => `<article class="enrolled-course-card ${course.theme}"><div class="enrolled-cover"><span>${course.mark}</span><i>${course.isDemo ? 'ACCESO DEMO' : 'ACCESS ACTIVE'}</i></div><div class="enrolled-course-copy"><p class="course-category">${course.category}</p><h3>${course.title}</h3><p>${course.shortDescription}</p><button class="course-open" type="button" data-enrolled-course="${course.id}">Entrar al curso <span>→</span></button></div></article>`).join('');
-      list.querySelectorAll('[data-enrolled-course]').forEach((button) => button.addEventListener('click', () => setRoute(`curso/${button.dataset.enrolledCourse}`)));
-    }
+    renderStudentCourseCards();
     if (demoPurchaseResult.error) {
       status.textContent = 'Para activar el botón de compra simulada, ejecuta la sección demo_purchases de supabase-schema.sql en Supabase.';
       status.hidden = false;
     }
+  }
+  if (progressResult.error && status.hidden) {
+    status.textContent = 'Para guardar el avance de clases, ejecuta el SQL actualizado de supabase-schema.sql en Supabase.';
+    status.hidden = false;
   }
 
   if (certificateResult.error) {
@@ -517,9 +717,13 @@ function resetRealtimeChannels() {
   if (enrollmentChannel) supabaseClient.removeChannel(enrollmentChannel);
   if (certificateChannel) supabaseClient.removeChannel(certificateChannel);
   if (demoPurchaseChannel) supabaseClient.removeChannel(demoPurchaseChannel);
+  if (lessonProgressChannel) supabaseClient.removeChannel(lessonProgressChannel);
+  if (lessonCommentsChannel) supabaseClient.removeChannel(lessonCommentsChannel);
   enrollmentChannel = null;
   certificateChannel = null;
   demoPurchaseChannel = null;
+  lessonProgressChannel = null;
+  lessonCommentsChannel = null;
 }
 
 function subscribeToStudentData(user) {
@@ -534,6 +738,9 @@ function subscribeToStudentData(user) {
   demoPurchaseChannel = supabaseClient.channel(`student-demo-purchases-${user.id}`)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'demo_purchases', filter: `user_id=eq.${user.id}` }, () => loadStudentData(user))
     .subscribe();
+  lessonProgressChannel = supabaseClient.channel(`student-lesson-progress-${user.id}`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'lesson_progress', filter: `user_id=eq.${user.id}` }, () => loadStudentData(user))
+    .subscribe();
 }
 
 function updateSession(session) {
@@ -546,8 +753,12 @@ function updateSession(session) {
     subscribeToStudentData(user);
   } else if (!user && previousId) {
     enrolledCourseIds = new Set();
+    progressByCourse = new Map();
     resetRealtimeChannels();
     renderCourses();
+    renderStudentCourseCards();
+    document.querySelector('#lesson-comments-card').hidden = true;
+    document.querySelector('#lesson-completion').hidden = true;
   }
 }
 
@@ -579,6 +790,8 @@ document.querySelectorAll('[data-purchase]').forEach((button) => button.addEvent
   else openPurchaseDialog();
 }));
 document.querySelector('#simulate-purchase').addEventListener('click', simulatePurchase);
+document.querySelector('#complete-lesson-button').addEventListener('click', toggleLessonCompletion);
+document.querySelector('#lesson-comment-form').addEventListener('submit', publishLessonComment);
 accessButton.addEventListener('click', () => openAuth('login'));
 memberChip.addEventListener('click', () => authDialog.showModal());
 loginTab.addEventListener('click', () => setAuthMode('login'));
