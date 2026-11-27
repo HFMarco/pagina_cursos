@@ -55,11 +55,11 @@ El botón **Simular compra** crea un registro de prueba de S/ 0.10 en `demo_purc
 
 ### Activar matrículas, certificados y actualizaciones automáticas
 
-1. En tu proyecto Supabase, abre **SQL Editor**, copia el contenido actualizado de `supabase-schema.sql` y ejecútalo. Si ya ejecutaste la versión anterior, vuelve a ejecutar el archivo completo: crea `lesson_progress` y `course_comments` y configura sus permisos sin borrar los registros existentes.
+1. En tu proyecto Supabase, abre **SQL Editor**, copia el contenido actualizado de `supabase-schema.sql` y ejecútalo. Si ya ejecutaste la versión anterior, vuelve a ejecutar el archivo completo: agrega `parent_comment_id` para las respuestas y actualiza permisos sin borrar los comentarios existentes; los anteriores quedan como publicaciones principales.
 2. Publica la versión actualizada del sitio y entra con un usuario de prueba.
 3. Abre **Cursos → Ver temario → Simular compra**. Inicia sesión si te lo pide y vuelve al curso. La compra queda guardada en Supabase; si vuelves a entrar con esa cuenta, el acceso sigue habilitado. En **Table Editor → demo_purchases** puedes revisar el registro.
 4. En el curso, abre una lección y pulsa **Marcar clase como completada**. El porcentaje se calcula sobre videos y teorías; los registros se guardan en `lesson_progress`. El botón permite desmarcar una lección si hace falta.
-5. Cada lección tiene comentarios propios. Los alumnos con acceso a ese curso pueden leer y publicar comentarios; se guardan en `course_comments`.
+5. Cada lección tiene comentarios y respuestas. Los alumnos con acceso a ese curso pueden leer, publicar y responder; los comentarios se actualizan automáticamente. El botón flotante **Inicio de la clase** vuelve al reproductor.
 6. Los certificados se muestran al insertar un registro en `certificates` con `user_id`, `course_id` y, opcionalmente, `certificate_url`.
 
 La compra simulada es deliberadamente accesible para cualquier usuario autenticado: úsala solo para probar. No la confundas con una matrícula pagada. Cuando integres Culqi, el servidor/webhook debe validar la transacción y crear el registro de matrícula; desactiva o elimina `demo_purchases` antes de vender.
@@ -91,5 +91,16 @@ El formulario usa Supabase Auth para crear cuentas, confirmar el correo e inicia
 3. En **Authentication → URL Configuration**, configura el **Site URL** con la URL de producción `https://TU-PROYECTO.pages.dev/` y agrégala también a **Redirect URLs**. Si pruebas con Live Server, agrega su URL local, por ejemplo `http://127.0.0.1:5500/**`.
 4. En Supabase, copia la **Project URL** y la **Publishable key** a `supabase-config.js`. La clave publicable está diseñada para uso en el navegador; nunca uses una Secret key ni una `service_role` en el frontend.
 5. Guarda, sube el cambio al repositorio y espera el despliegue de Cloudflare Pages.
+
+### Mostrar el nombre de la academia en los correos
+
+El remitente y el diseño del correo se configuran en el proyecto de autenticación, no en el HTML de la página. Para enviar verificaciones a estudiantes y personalizar el remitente:
+
+1. Usa una dirección de un dominio que controles, por ejemplo `verificacion@tudominio.com`, y configura un proveedor SMTP (como Resend, Amazon SES, Postmark, SendGrid o Brevo).
+2. En el DNS del dominio publica los registros de autenticación que indique el proveedor (SPF y DKIM; también configura DMARC).
+3. En Supabase abre la configuración de SMTP personalizado e ingresa host, puerto, usuario, contraseña, dirección remitente y nombre de remitente `Cyber Aula`.
+4. En **Authentication → Email Templates → Confirm signup**, personaliza el asunto y el contenido. Mantén `{{ .ConfirmationURL }}` en el enlace de confirmación.
+
+El correo puede aparecer con el nombre de la academia, pero la dirección remitente debe pertenecer a un dominio verificado por tu proveedor. El SMTP predeterminado sirve para pruebas limitadas; para estudiantes reales configura SMTP propio.
 
 La interfaz indica si el correo fue confirmado. **Aviso sobre el bloqueo actual:** como la web es estática, el temario de teoría incluido en `app.js` se descarga al navegador y una persona técnica podría inspeccionar el código aunque la interfaz muestre candados. Es un bloqueo visual para esta prueba, no una protección de contenido de producción. Antes de vender, traslada lecciones a un backend con autorización por matrícula y videos de Stream con URLs firmadas; nunca publiques la Secret key ni una `service_role`.

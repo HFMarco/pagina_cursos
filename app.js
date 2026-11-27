@@ -421,7 +421,7 @@ async function toggleLessonCompletion() {
     : await query.insert({ user_id: activeSession.user.id, course_id: selectedCourse.id, lesson_id: selectedLesson.lessonId });
   button.disabled = false;
   if (result.error && !(result.error.code === '23505' && !wasComplete)) {
-    document.querySelector('#lesson-completion-message').textContent = 'No se pudo guardar el avance. Ejecuta el SQL actualizado en Supabase e inténtalo otra vez.';
+    document.querySelector('#lesson-completion-message').textContent = 'No pudimos guardar tu avance. Revisa tu conexión e inténtalo de nuevo.';
     return;
   }
   const completed = progressByCourse.get(selectedCourse.id) || new Set();
@@ -481,22 +481,35 @@ async function loadLessonComments(course, lesson) {
     return;
   }
   const { data, error } = await supabaseClient.from('course_comments')
-    .select('id, user_id, body, created_at')
+    .select('id, user_id, body, parent_comment_id, created_at')
     .eq('course_id', course.id)
     .eq('lesson_id', lesson.lessonId)
     .order('created_at', { ascending: true });
   if (!activeSession?.user || selectedCourse?.id !== course.id || selectedLesson?.lessonId !== lesson.lessonId) return;
   if (error) {
-    status.textContent = 'No se pudieron cargar los comentarios. Ejecuta el SQL actualizado en Supabase.';
+    status.textContent = 'No se pudieron cargar los comentarios. Inténtalo de nuevo en un momento.';
     count.textContent = '0';
     return;
   }
   const comments = data || [];
   count.textContent = String(comments.length);
   status.textContent = comments.length ? '' : 'Aún no hay comentarios para esta lección. Puedes iniciar la conversación.';
+  const byParent = new Map();
   comments.forEach((comment) => {
+    const parentKey = comment.parent_comment_id || 'root';
+    const children = byParent.get(parentKey) || [];
+    children.push(comment);
+    byParent.set(parentKey, children);
+  });
+  appendCommentThread('root', byParent, list, 0);
+}
+
+function appendCommentThread(parentId, byParent, container, depth) {
+  const thread = byParent.get(parentId) || [];
+  thread.forEach((comment) => {
     const article = document.createElement('article');
-    article.className = 'lesson-comment';
+    article.className = `lesson-comment${depth ? ' lesson-comment-reply' : ''}`;
+    article.style.marginLeft = `${Math.min(depth, 4) * 16}px`;
     const header = document.createElement('div');
     header.className = 'lesson-comment-meta';
     const author = document.createElement('strong');
@@ -507,9 +520,77 @@ async function loadLessonComments(course, lesson) {
     const body = document.createElement('p');
     body.textContent = comment.body;
     header.append(author, time);
-    article.append(header, body);
-    list.append(article);
+    const actions = document.createElement('div');
+    actions.className = 'lesson-comment-actions';
+    const replyButton = document.createElement('button');
+    replyButton.className = 'lesson-comment-reply-button';
+    replyButton.type = 'button';
+    replyButton.textContent = 'Responder';
+    const replyForm = createReplyForm(comment);
+    replyButton.addEventListener('click', () => {
+      replyForm.hidden = !replyForm.hidden;
+      if (!replyForm.hidden) replyForm.querySelector('textarea')?.focus();
+    });
+    actions.append(replyButton);
+    const replies = document.createElement('div');
+    replies.className = 'lesson-comment-replies';
+    article.append(header, body, actions, replyForm, replies);
+    container.append(article);
+    appendCommentThread(comment.id, byParent, replies, depth + 1);
   });
+}
+
+function createReplyForm(parentComment) {
+  const form = document.createElement('form');
+  form.className = 'lesson-comment-form lesson-comment-reply-form';
+  form.hidden = true;
+  const textarea = document.createElement('textarea');
+  textarea.name = 'body';
+  textarea.rows = 2;
+  textarea.maxLength = 2000;
+  textarea.required = true;
+  textarea.placeholder = 'Escribe tu respuesta…';
+  textarea.setAttribute('aria-label', 'Respuesta al comentario');
+  const footer = document.createElement('div');
+  footer.className = 'comment-form-footer';
+  const cancel = document.createElement('button');
+  cancel.className = 'lesson-comment-reply-button';
+  cancel.type = 'button';
+  cancel.textContent = 'Cancelar';
+  cancel.addEventListener('click', () => { form.hidden = true; form.reset(); });
+  const submit = document.createElement('button');
+  submit.className = 'button-primary';
+  submit.type = 'submit';
+  submit.textContent = 'Responder';
+  footer.append(cancel, submit);
+  form.append(textarea, footer);
+  form.addEventListener('submit', (event) => publishCommentReply(event, parentComment, form));
+  return form;
+}
+
+async function publishCommentReply(event, parentComment, form) {
+  event.preventDefault();
+  const body = String(new FormData(form).get('body') || '').trim();
+  if (!body || !activeSession?.user || !selectedCourse || !selectedLesson || !supabaseClient) return;
+  const course = selectedCourse;
+  const lesson = selectedLesson;
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+  const { error } = await supabaseClient.from('course_comments').insert({
+    user_id: activeSession.user.id,
+    course_id: course.id,
+    lesson_id: lesson.lessonId,
+    parent_comment_id: parentComment.id,
+    body
+  });
+  button.disabled = false;
+  if (error) {
+    document.querySelector('#comments-status').textContent = 'No se pudo publicar la respuesta. Vuelve a intentarlo.';
+    return;
+  }
+  form.reset();
+  form.hidden = true;
+  if (selectedCourse?.id === course.id && selectedLesson?.lessonId === lesson.lessonId) await loadLessonComments(course, lesson);
 }
 
 function subscribeToLessonComments(course, lesson) {
@@ -539,7 +620,7 @@ async function publishLessonComment(event) {
   });
   button.disabled = false;
   if (error) {
-    document.querySelector('#comments-status').textContent = 'No se pudo publicar. Ejecuta el SQL actualizado en Supabase y vuelve a intentar.';
+    document.querySelector('#comments-status').textContent = 'No se pudo publicar el comentario. Vuelve a intentarlo.';
     return;
   }
   form.reset();
@@ -564,7 +645,7 @@ async function simulatePurchase() {
     return;
   }
   if (!supabaseClient) {
-    document.querySelector('#purchase-message').textContent = 'Configura Supabase para guardar la compra simulada de forma persistente.';
+    document.querySelector('#purchase-message').textContent = 'La compra de prueba no está disponible por el momento. Inténtalo más tarde.';
     return;
   }
   const button = document.querySelector('#simulate-purchase');
@@ -581,7 +662,7 @@ async function simulatePurchase() {
   if (error) {
     const message = error.code === '23505'
       ? 'Esta cuenta ya tiene el acceso de prueba registrado.'
-      : 'No se guardó. Ejecuta primero la migración supabase-schema.sql en Supabase y vuelve a intentar.';
+      : 'No se pudo registrar la compra de prueba. Revisa tu conexión e inténtalo de nuevo.';
     document.querySelector('#purchase-message').textContent = message;
     if (error.code === '23505') {
       await loadStudentData(activeSession.user);
@@ -602,7 +683,7 @@ function setAuthMode(mode) {
   registerTab.classList.toggle('active', registering);
   loginTab.setAttribute('aria-selected', String(!registering));
   registerTab.setAttribute('aria-selected', String(registering));
-  authMessage.textContent = hasSupabaseConfig ? '' : 'Falta configurar supabase-config.js con la Project URL y la Publishable key.';
+  authMessage.textContent = hasSupabaseConfig ? '' : 'El acceso a tu cuenta no está disponible por el momento. Inténtalo más tarde.';
 }
 
 function openAuth(mode = 'login') {
@@ -671,7 +752,7 @@ async function loadStudentData(user) {
   }
 
   if (enrollmentResult.error) {
-    status.textContent = 'No se pudo leer tu matrícula. Revisa la tabla enrollments y sus políticas en Supabase.';
+    status.textContent = 'No se pudo cargar la información de tus cursos. Inténtalo de nuevo en un momento.';
     status.hidden = false;
     enrolledCourseIds = new Set();
   } else {
@@ -680,12 +761,12 @@ async function loadStudentData(user) {
     enrolledCourseIds = new Set([...rows, ...demoRows].map((row) => row.course_id));
     renderStudentCourseCards();
     if (demoPurchaseResult.error) {
-      status.textContent = 'Para activar el botón de compra simulada, ejecuta la sección demo_purchases de supabase-schema.sql en Supabase.';
+      status.textContent = 'La información de acceso está temporalmente no disponible. Inténtalo más tarde.';
       status.hidden = false;
     }
   }
   if (progressResult.error && status.hidden) {
-    status.textContent = 'Para guardar el avance de clases, ejecuta el SQL actualizado de supabase-schema.sql en Supabase.';
+    status.textContent = 'El avance de tus clases está temporalmente no disponible. Inténtalo más tarde.';
     status.hidden = false;
   }
 
@@ -792,6 +873,9 @@ document.querySelectorAll('[data-purchase]').forEach((button) => button.addEvent
 document.querySelector('#simulate-purchase').addEventListener('click', simulatePurchase);
 document.querySelector('#complete-lesson-button').addEventListener('click', toggleLessonCompletion);
 document.querySelector('#lesson-comment-form').addEventListener('submit', publishLessonComment);
+document.querySelector('#comments-jump-to-lesson').addEventListener('click', () => {
+  document.querySelector('#lesson-player-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 accessButton.addEventListener('click', () => openAuth('login'));
 memberChip.addEventListener('click', () => authDialog.showModal());
 loginTab.addEventListener('click', () => setAuthMode('login'));
@@ -799,7 +883,7 @@ registerTab.addEventListener('click', () => setAuthMode('register'));
 
 document.querySelector('#register-form').addEventListener('submit', async (event) => {
   event.preventDefault();
-  if (!supabaseClient) { authMessage.textContent = 'Completa supabase-config.js y vuelve a desplegar el sitio para habilitar el registro.'; return; }
+  if (!supabaseClient) { authMessage.textContent = 'El registro está temporalmente no disponible. Inténtalo más tarde.'; return; }
   const values = new FormData(event.currentTarget);
   const name = String(values.get('name') || '').trim();
   const email = String(values.get('email') || '').trim();
@@ -821,7 +905,7 @@ document.querySelector('#register-form').addEventListener('submit', async (event
 
 document.querySelector('#login-form').addEventListener('submit', async (event) => {
   event.preventDefault();
-  if (!supabaseClient) { authMessage.textContent = 'Completa supabase-config.js y vuelve a desplegar el sitio para habilitar el acceso.'; return; }
+  if (!supabaseClient) { authMessage.textContent = 'El acceso está temporalmente no disponible. Inténtalo más tarde.'; return; }
   const values = new FormData(event.currentTarget);
   const email = String(values.get('email') || '').trim();
   const password = String(values.get('password') || '');

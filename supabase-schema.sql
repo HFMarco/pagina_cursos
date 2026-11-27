@@ -54,11 +54,16 @@ create table if not exists public.course_comments (
   user_id uuid not null references auth.users (id) on delete cascade,
   course_id text not null check (course_id in ('fortinet', 'ccna', 'mikrotik')),
   lesson_id text not null,
+  parent_comment_id uuid references public.course_comments (id) on delete cascade,
   body text not null check (char_length(trim(body)) between 1 and 2000),
   created_at timestamptz not null default now()
 );
 
+alter table public.course_comments
+  add column if not exists parent_comment_id uuid references public.course_comments (id) on delete cascade;
+
 create index if not exists course_comments_course_lesson_created_idx on public.course_comments (course_id, lesson_id, created_at);
+create index if not exists course_comments_parent_comment_id_idx on public.course_comments (parent_comment_id);
 
 alter table public.enrollments enable row level security;
 alter table public.certificates enable row level security;
@@ -168,6 +173,15 @@ create policy "Course members can post lesson comments as themselves"
         where d.user_id = (select auth.uid())
           and d.course_id = course_comments.course_id
           and d.status = 'completed'
+      )
+    )
+    and (
+      parent_comment_id is null
+      or exists (
+        select 1 from public.course_comments parent
+        where parent.id = course_comments.parent_comment_id
+          and parent.course_id = course_comments.course_id
+          and parent.lesson_id = course_comments.lesson_id
       )
     )
   );

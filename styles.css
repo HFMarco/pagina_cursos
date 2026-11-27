@@ -651,9 +651,20 @@ main { width: min(100% - 64px, 1250px); margin: 0 auto; }
 .lesson-comment-meta strong { color: #9ce6d8; font-size: 8px; }
 .lesson-comment-meta time { color: #72899b; font-size: 7px; }
 .lesson-comment p { margin: 7px 0 0; color: #c0d0dc; font-size: 9px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.lesson-comments-tools { display: flex; align-items: center; gap: 10px; }
+.comments-jump-button { position: fixed; z-index: 30; right: 22px; bottom: 22px; padding: 11px 15px; border: 1px solid rgba(91,225,211,.38); border-radius: 999px; background: rgba(10,31,49,.96); box-shadow: 0 8px 28px rgba(0,0,0,.38); color: #91f0df; font: 700 9px 'DM Sans',sans-serif; cursor: pointer; backdrop-filter: blur(10px); }
+.comments-jump-button:hover { border-color: rgba(91,225,211,.75); background: #12324a; }
+.lesson-player-card { scroll-margin-top: 24px; }
+.lesson-comment-actions { display: flex; justify-content: flex-end; margin-top: 6px; }
+.lesson-comment-reply-button { padding: 4px 7px; border: 0; background: transparent; color: #67cfc9; font: 700 8px 'DM Sans',sans-serif; cursor: pointer; }
+.lesson-comment-reply-button:hover { color: #a2f4e4; text-decoration: underline; }
+.lesson-comment-reply-form { margin: 8px 0; }
+.lesson-comment-reply-form[hidden] { display: none; }
+.lesson-comment-replies { display: grid; gap: 7px; margin-top: 8px; padding-left: 8px; border-left: 1px solid rgba(86,185,189,.18); }
+.lesson-comment-reply { background: rgba(13,34,50,.8); }
 .student-course-progress { margin: 12px 0; }
 .student-course-progress > div:first-child { margin-bottom: 6px; color: #8da3b5; font-size: 8px; }
 .student-course-progress strong { color: #67e1d2; font-size: 9px; }
 .student-course-progress-track { height: 4px; overflow: hidden; border-radius: 10px; background: rgba(114,148,170,.16); }
 .student-course-progress-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#22b5b8,#69e3c9); transition: width .25s ease; }
-@media (max-width: 560px) { .lesson-completion { align-items: stretch; flex-direction: column; }.lesson-completion .button-primary { width: 100%; }.comment-form-footer { align-items: stretch; flex-direction: column; }.comment-form-footer .button-primary { width: 100%; } }
+@media (max-width: 560px) { .lesson-completion { align-items: stretch; flex-direction: column; }.lesson-completion .button-primary { width: 100%; }.comment-form-footer { align-items: stretch; flex-direction: column; }.comment-form-footer .button-primary { width: 100%; }.comments-jump-button { right: 14px; bottom: 14px; padding: 10px 13px; } }
