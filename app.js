@@ -487,6 +487,7 @@ async function loadLessonComments(course, lesson) {
     .order('created_at', { ascending: true });
   if (!activeSession?.user || selectedCourse?.id !== course.id || selectedLesson?.lessonId !== lesson.lessonId) return;
   if (error) {
+    console.error('No se pudieron cargar los comentarios de la clase.', error);
     status.textContent = 'No se pudieron cargar los comentarios. Inténtalo de nuevo en un momento.';
     count.textContent = '0';
     return;
@@ -574,23 +575,35 @@ async function publishCommentReply(event, parentComment, form) {
   if (!body || !activeSession?.user || !selectedCourse || !selectedLesson || !supabaseClient) return;
   const course = selectedCourse;
   const lesson = selectedLesson;
+  const userId = activeSession.user.id;
   const button = form.querySelector('button[type="submit"]');
+  const status = document.querySelector('#comments-status');
   button.disabled = true;
-  const { error } = await supabaseClient.from('course_comments').insert({
-    user_id: activeSession.user.id,
-    course_id: course.id,
-    lesson_id: lesson.lessonId,
-    parent_comment_id: parentComment.id,
-    body
-  });
-  button.disabled = false;
-  if (error) {
-    document.querySelector('#comments-status').textContent = 'No se pudo publicar la respuesta. Vuelve a intentarlo.';
-    return;
+  status.textContent = 'Publicando respuesta…';
+  try {
+    const { error } = await supabaseClient.from('course_comments').insert({
+      user_id: userId,
+      course_id: course.id,
+      lesson_id: lesson.lessonId,
+      parent_comment_id: parentComment.id,
+      body
+    });
+    if (error) {
+      console.error('No se pudo publicar la respuesta de la clase.', error);
+      status.textContent = 'No se pudo publicar la respuesta. Verifica que tengas acceso al curso e inténtalo otra vez.';
+      return;
+    }
+    form.reset();
+    form.hidden = true;
+    if (selectedCourse?.id === course.id && selectedLesson?.lessonId === lesson.lessonId) {
+      await loadLessonComments(course, lesson);
+    }
+  } catch (error) {
+    console.error('Falló la solicitud para responder al comentario.', error);
+    status.textContent = 'No se pudo publicar la respuesta. Revisa tu conexión e inténtalo otra vez.';
+  } finally {
+    button.disabled = false;
   }
-  form.reset();
-  form.hidden = true;
-  if (selectedCourse?.id === course.id && selectedLesson?.lessonId === lesson.lessonId) await loadLessonComments(course, lesson);
 }
 
 function subscribeToLessonComments(course, lesson) {
@@ -610,21 +623,34 @@ async function publishLessonComment(event) {
   const button = form.querySelector('button[type="submit"]');
   const body = String(new FormData(form).get('body') || '').trim();
   if (!body) return;
+  const course = selectedCourse;
+  const lesson = selectedLesson;
+  const userId = activeSession.user.id;
+  const status = document.querySelector('#comments-status');
   button.disabled = true;
-  document.querySelector('#comments-status').textContent = 'Publicando…';
-  const { error } = await supabaseClient.from('course_comments').insert({
-    user_id: activeSession.user.id,
-    course_id: selectedCourse.id,
-    lesson_id: selectedLesson.lessonId,
-    body
-  });
-  button.disabled = false;
-  if (error) {
-    document.querySelector('#comments-status').textContent = 'No se pudo publicar el comentario. Vuelve a intentarlo.';
-    return;
+  status.textContent = 'Publicando…';
+  try {
+    const { error } = await supabaseClient.from('course_comments').insert({
+      user_id: userId,
+      course_id: course.id,
+      lesson_id: lesson.lessonId,
+      body
+    });
+    if (error) {
+      console.error('No se pudo publicar el comentario de la clase.', error);
+      status.textContent = 'No se pudo publicar el comentario. Verifica que tengas acceso al curso e inténtalo otra vez.';
+      return;
+    }
+    form.reset();
+    if (selectedCourse?.id === course.id && selectedLesson?.lessonId === lesson.lessonId) {
+      await loadLessonComments(course, lesson);
+    }
+  } catch (error) {
+    console.error('Falló la solicitud para publicar un comentario.', error);
+    status.textContent = 'No se pudo publicar el comentario. Revisa tu conexión e inténtalo otra vez.';
+  } finally {
+    button.disabled = false;
   }
-  form.reset();
-  await loadLessonComments(selectedCourse, selectedLesson);
 }
 
 function openPurchaseDialog(course = selectedCourse) {

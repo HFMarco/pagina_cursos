@@ -82,6 +82,45 @@ grant select, insert on table public.demo_purchases to authenticated;
 grant select, insert, delete on table public.lesson_progress to authenticated;
 grant select, insert on table public.course_comments to authenticated;
 
+-- Valida el comentario padre sin volver a evaluar las políticas RLS de la misma tabla.
+create or replace function public.course_comment_parent_matches(
+  p_parent_comment_id uuid,
+  p_course_id text,
+  p_lesson_id text
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1
+    from public.course_comments parent
+    where parent.id = p_parent_comment_id
+      and parent.course_id = p_course_id
+      and parent.lesson_id = p_lesson_id
+  );
+$$;
+
+revoke all on function public.course_comment_parent_matches(uuid, text, text) from public, anon;
+grant execute on function public.course_comment_parent_matches(uuid, text, text) to authenticated;
+
+-- Quita posibles políticas antiguas que puedan seguir aplicándose en paralelo.
+do $$
+declare
+  existing_policy record;
+begin
+  for existing_policy in
+    select policyname
+    from pg_policies
+    where schemaname = 'public' and tablename = 'course_comments'
+  loop
+    execute format('drop policy if exists %I on public.course_comments', existing_policy.policyname);
+  end loop;
+end;
+$$;
+
 drop policy if exists "Students can read their own enrollments" on public.enrollments;
 create policy "Students can read their own enrollments"
   on public.enrollments for select to authenticated
@@ -177,11 +216,10 @@ create policy "Course members can post lesson comments as themselves"
     )
     and (
       parent_comment_id is null
-      or exists (
-        select 1 from public.course_comments parent
-        where parent.id = course_comments.parent_comment_id
-          and parent.course_id = course_comments.course_id
-          and parent.lesson_id = course_comments.lesson_id
+      or public.course_comment_parent_matches(
+        parent_comment_id,
+        course_comments.course_id,
+        course_comments.lesson_id
       )
     )
   );

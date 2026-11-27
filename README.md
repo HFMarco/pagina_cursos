@@ -55,7 +55,7 @@ El botón **Simular compra** crea un registro de prueba de S/ 0.10 en `demo_purc
 
 ### Activar matrículas, certificados y actualizaciones automáticas
 
-1. En tu proyecto Supabase, abre **SQL Editor**, copia el contenido actualizado de `supabase-schema.sql` y ejecútalo. Si ya ejecutaste la versión anterior, vuelve a ejecutar el archivo completo: agrega `parent_comment_id` para las respuestas y actualiza permisos sin borrar los comentarios existentes; los anteriores quedan como publicaciones principales.
+1. En tu proyecto Supabase, abre **SQL Editor**, copia el contenido actualizado de `supabase-schema.sql` y ejecútalo. Si ya ejecutaste la versión anterior, vuelve a ejecutar el archivo completo: agrega `parent_comment_id`, reemplaza las políticas de comentarios por una versión que evita recursión y conserva los comentarios existentes; los anteriores quedan como publicaciones principales.
 2. Publica la versión actualizada del sitio y entra con un usuario de prueba.
 3. Abre **Cursos → Ver temario → Simular compra**. Inicia sesión si te lo pide y vuelve al curso. La compra queda guardada en Supabase; si vuelves a entrar con esa cuenta, el acceso sigue habilitado. En **Table Editor → demo_purchases** puedes revisar el registro.
 4. En el curso, abre una lección y pulsa **Marcar clase como completada**. El porcentaje se calcula sobre videos y teorías; los registros se guardan en `lesson_progress`. El botón permite desmarcar una lección si hace falta.
