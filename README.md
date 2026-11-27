@@ -62,6 +62,12 @@ El botón **Simular compra** crea un registro de prueba de S/ 0.10 en `demo_purc
 5. Cada lección tiene comentarios y respuestas. Los alumnos con acceso a ese curso pueden leer, publicar y responder; los comentarios se actualizan automáticamente. El botón flotante **Inicio de la clase** vuelve al reproductor.
 6. Los certificados se muestran al insertar un registro en `certificates` con `user_id`, `course_id` y, opcionalmente, `certificate_url`.
 
+### Rendimiento de comentarios
+
+- La página conserva en memoria los comentarios de cada clase durante 20 segundos para volver a mostrarlos al instante al regresar a esa lección; los cambios en tiempo real invalidan esa copia.
+- Los eventos se filtran por curso y se comprueba la lección antes de recargar. Las notificaciones muy seguidas se agrupan en una sola consulta.
+- `course_comments` tiene un índice compuesto para filtrar por curso y lección y ordenar por fecha. Si el volumen crece, añade carga paginada de comentarios antiguos y mide la consulta con **Database → Query Performance** antes de sumar índices.
+
 La compra simulada es deliberadamente accesible para cualquier usuario autenticado: úsala solo para probar. No la confundas con una matrícula pagada. Cuando integres Culqi, el servidor/webhook debe validar la transacción y crear el registro de matrícula; desactiva o elimina `demo_purchases` antes de vender.
 
 El formulario de contacto de demostración prepara un correo dirigido a `soporte@cyberaula.example`; no almacena ni envía datos a un servidor. El teléfono y WhatsApp son ejemplos: reemplázalos por los canales reales antes de publicar.

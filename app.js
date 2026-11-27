@@ -183,6 +183,8 @@ let certificateChannel = null;
 let demoPurchaseChannel = null;
 let lessonProgressChannel = null;
 let lessonCommentsChannel = null;
+let lessonCommentsReloadTimer = null;
+const lessonCommentsCache = new Map();
 
 function setRoute(route, { replace = false, scrollTo = true } = {}) {
   const cleanRoute = route.replace(/^#/, '');
@@ -468,13 +470,42 @@ function renderStudentCourseCards() {
   list.querySelectorAll('[data-enrolled-course]').forEach((button) => button.addEventListener('click', () => setRoute(`curso/${button.dataset.enrolledCourse}`)));
 }
 
-async function loadLessonComments(course, lesson) {
+function lessonCommentsCacheKey(course, lesson) {
+  return `${course.id}:${lesson.lessonId}`;
+}
+
+function renderLessonComments(comments) {
   const status = document.querySelector('#comments-status');
   const list = document.querySelector('#lesson-comments-list');
   const count = document.querySelector('#lesson-comments-count');
   list.replaceChildren();
-  count.textContent = '…';
-  status.textContent = 'Cargando comentarios…';
+  count.textContent = String(comments.length);
+  status.textContent = comments.length ? '' : 'Aún no hay comentarios para esta lección. Puedes iniciar la conversación.';
+  const byParent = new Map();
+  comments.forEach((comment) => {
+    const parentKey = comment.parent_comment_id || 'root';
+    const children = byParent.get(parentKey) || [];
+    children.push(comment);
+    byParent.set(parentKey, children);
+  });
+  appendCommentThread('root', byParent, list, 0);
+}
+
+async function loadLessonComments(course, lesson, { force = false } = {}) {
+  const status = document.querySelector('#comments-status');
+  const list = document.querySelector('#lesson-comments-list');
+  const count = document.querySelector('#lesson-comments-count');
+  const cacheKey = lessonCommentsCacheKey(course, lesson);
+  const cached = lessonCommentsCache.get(cacheKey);
+  if (cached) {
+    renderLessonComments(cached.comments);
+    if (!force && Date.now() - cached.loadedAt < 20000) return;
+    status.textContent = 'Actualizando comentarios…';
+  } else {
+    list.replaceChildren();
+    count.textContent = '…';
+    status.textContent = 'Cargando comentarios…';
+  }
   if (!supabaseClient || !activeSession?.user) {
     status.textContent = 'Inicia sesión con acceso al curso para ver y publicar comentarios.';
     count.textContent = '0';
@@ -488,21 +519,29 @@ async function loadLessonComments(course, lesson) {
   if (!activeSession?.user || selectedCourse?.id !== course.id || selectedLesson?.lessonId !== lesson.lessonId) return;
   if (error) {
     console.error('No se pudieron cargar los comentarios de la clase.', error);
-    status.textContent = 'No se pudieron cargar los comentarios. Inténtalo de nuevo en un momento.';
-    count.textContent = '0';
+    if (cached) {
+      renderLessonComments(cached.comments);
+      status.textContent = 'Mostrando comentarios guardados. No se pudieron actualizar.';
+    } else {
+      status.textContent = 'No se pudieron cargar los comentarios. Inténtalo de nuevo en un momento.';
+      count.textContent = '0';
+    }
     return;
   }
   const comments = data || [];
-  count.textContent = String(comments.length);
-  status.textContent = comments.length ? '' : 'Aún no hay comentarios para esta lección. Puedes iniciar la conversación.';
-  const byParent = new Map();
-  comments.forEach((comment) => {
-    const parentKey = comment.parent_comment_id || 'root';
-    const children = byParent.get(parentKey) || [];
-    children.push(comment);
-    byParent.set(parentKey, children);
-  });
-  appendCommentThread('root', byParent, list, 0);
+  lessonCommentsCache.set(cacheKey, { comments, loadedAt: Date.now() });
+  renderLessonComments(comments);
+}
+
+function scheduleLessonCommentsReload(course, lesson) {
+  lessonCommentsCache.delete(lessonCommentsCacheKey(course, lesson));
+  if (lessonCommentsReloadTimer) window.clearTimeout(lessonCommentsReloadTimer);
+  lessonCommentsReloadTimer = window.setTimeout(() => {
+    lessonCommentsReloadTimer = null;
+    if (selectedCourse?.id === course.id && selectedLesson?.lessonId === lesson.lessonId) {
+      loadLessonComments(course, lesson, { force: true });
+    }
+  }, 180);
 }
 
 function appendCommentThread(parentId, byParent, container, depth) {
@@ -596,7 +635,8 @@ async function publishCommentReply(event, parentComment, form) {
     form.reset();
     form.hidden = true;
     if (selectedCourse?.id === course.id && selectedLesson?.lessonId === lesson.lessonId) {
-      await loadLessonComments(course, lesson);
+      status.textContent = 'Respuesta publicada.';
+      scheduleLessonCommentsReload(course, lesson);
     }
   } catch (error) {
     console.error('Falló la solicitud para responder al comentario.', error);
@@ -610,8 +650,11 @@ function subscribeToLessonComments(course, lesson) {
   if (!supabaseClient || !activeSession?.user) return;
   if (lessonCommentsChannel) supabaseClient.removeChannel(lessonCommentsChannel);
   lessonCommentsChannel = supabaseClient.channel(`comments-${course.id}-${lesson.lessonId}-${activeSession.user.id}`)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'course_comments', filter: `course_id=eq.${course.id}` }, () => {
-      if (selectedCourse?.id === course.id && selectedLesson?.lessonId === lesson.lessonId) loadLessonComments(course, lesson);
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'course_comments', filter: `course_id=eq.${course.id}` }, (payload) => {
+      const changedLessonId = payload.new?.lesson_id || payload.old?.lesson_id;
+      if (changedLessonId === lesson.lessonId && selectedCourse?.id === course.id && selectedLesson?.lessonId === lesson.lessonId) {
+        scheduleLessonCommentsReload(course, lesson);
+      }
     })
     .subscribe();
 }
@@ -643,7 +686,8 @@ async function publishLessonComment(event) {
     }
     form.reset();
     if (selectedCourse?.id === course.id && selectedLesson?.lessonId === lesson.lessonId) {
-      await loadLessonComments(course, lesson);
+      status.textContent = 'Comentario publicado.';
+      scheduleLessonCommentsReload(course, lesson);
     }
   } catch (error) {
     console.error('Falló la solicitud para publicar un comentario.', error);
@@ -852,6 +896,12 @@ function subscribeToStudentData(user) {
 
 function updateSession(session) {
   const previousId = activeSession?.user?.id;
+  const nextId = session?.user?.id;
+  if (previousId !== nextId) {
+    if (lessonCommentsReloadTimer) window.clearTimeout(lessonCommentsReloadTimer);
+    lessonCommentsReloadTimer = null;
+    lessonCommentsCache.clear();
+  }
   activeSession = session;
   const user = session?.user || null;
   updateAuthChrome(user);
