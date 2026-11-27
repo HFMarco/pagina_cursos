@@ -61,24 +61,86 @@ const courses = [
     ]
   },
   {
-    id: 'ccna', title: 'Cisco CCNA: redes empresariales', category: 'Preparación CCNA', certification: 'Cisco CCNA (200-301)', pricePen: 0.10, level: 'Inicial · Intermedio', duration: '8 h', lessons: 12,
+    id: 'ccna', title: 'Cisco CCNA: redes empresariales', category: 'Preparación CCNA', certification: 'Cisco CCNA (200-301 v1.1)', pricePen: 0.10, level: 'Inicial · Intermedio', duration: '12 h · 6 dominios', lessons: 12,
     theme: 'blue', mark: '02', label: 'CISCO · CCNA',
-    shortDescription: 'Construye bases de redes y practica los temas centrales de la ruta CCNA.',
-    description: 'Estudia fundamentos de red, acceso, conectividad IP, servicios, seguridad y automatización con ejercicios guiados. La certificación oficial requiere rendir el examen correspondiente de Cisco.',
-    introTitle: 'Tu camino hacia CCNA',
-    introDescription: 'Una visión general del examen CCNA y de cómo abordaremos redes, configuración y diagnóstico.',
-    chapters: ['Introducción al examen CCNA 200-301', 'Fundamentos de redes y modelos', 'Ethernet y switching', 'VLAN y enlaces troncales', 'Direccionamiento IPv4 y subnetting', 'Conceptos de IPv6', 'Routing estático y dinámico', 'Servicios IP: DHCP, DNS y NAT', 'Fundamentos de seguridad', 'Wireless y acceso', 'Automatización y programabilidad', 'Laboratorio integrador y repaso'],
-    outcomes: ['Explicar fundamentos de redes y conectividad empresarial.', 'Interpretar direccionamiento IP y conceptos de switching y routing.', 'Practicar diagnóstico con una ruta alineada a los dominios publicados para CCNA.']
+    shortDescription: 'Ruta de estudio de los seis dominios oficiales del examen Cisco CCNA 200-301.',
+    description: 'Preparación teórica para Cisco CCNA 200-301 v1.1: fundamentos, acceso, conectividad IP, servicios IP, seguridad y automatización. Incluye las habilidades y escenarios del blueprint oficial. Cisco anuncia que v1.1 estará disponible hasta el 2 de febrero de 2027 y v2.0 inicia el 3 de febrero de 2027; revisa el blueprint de la versión que rendirás.',
+    introTitle: '1. CCNA: alcance y plan de estudio',
+    introDescription: 'El examen actual 200-301 v1.1 dura 120 minutos y cubre seis dominios. Esta ruta tiene teoría y clases en video por dominio; los laboratorios con IOS y WLC son importantes para practicar configuración y lectura de salidas.',
+    outcomes: ['Configurar y solucionar problemas básicos de redes IPv4/IPv6 y switching.', 'Interpretar rutas, servicios IP, controles de seguridad y WLAN.', 'Reconocer los conceptos de automatización, APIs, JSON y redes basadas en controladores.'],
+    modules: [
+      { title: '1. Network Fundamentals · 20%', lessons: [
+        { type: 'video', title: '1.1 Clase (video): componentes y arquitectura de red', description: 'Video por grabar: dispositivos, topologías, medios, protocolos y fundamentos de switching.' },
+        { type: 'theory', title: '1.2 Teoría: fundamentos de redes', content: 'Identifica la función de routers, switches de capa 2/3, firewalls de nueva generación/IPS, puntos de acceso, controladores, endpoints, servidores y PoE. Compara arquitecturas de dos y tres capas, spine-leaf, WAN, SOHO y despliegues locales o en nube.\n\nDistingue cobre, fibra monomodo/multimodo y enlaces compartidos frente a punto a punto. Errores, colisiones y desajustes de velocidad/dúplex degradan el enlace. TCP ofrece transporte orientado a conexión y control de entrega; UDP reduce sobrecarga y no garantiza entrega.\n\nDomina direccionamiento IPv4, subnetting y rangos privados; en IPv6, prefijos y tipos global unicast, unique-local, link-local, anycast, multicast y modified EUI-64. Practica comprobación de parámetros IP en Windows, macOS y Linux. Añade principios WLAN (SSID, RF, canales no solapados y cifrado), virtualización (VM, contenedores, VRF) y aprendizaje/aging de MAC, switching, flooding y tabla MAC.' }
+      ]},
+      { title: '2. Network Access · 20%', lessons: [
+        { type: 'video', title: '2.1 Clase (video): VLAN, trunks, STP y EtherChannel', description: 'Video por grabar: configuración de acceso/voz, 802.1Q, Rapid PVST+, LACP y protección de spanning tree.' },
+        { type: 'theory', title: '2.2 Teoría: switching y acceso a la red', content: 'Configura VLAN normales en varios switches; distingue puertos access de datos/voz, VLAN por defecto y conectividad inter-VLAN. Un trunk 802.1Q transporta varias VLAN y su VLAN nativa debe coincidir entre extremos. CDP y LLDP ayudan a verificar vecinos, puertos y documentación. EtherChannel agrega enlaces y LACP negocia el port-channel, que debe coincidir en parámetros a ambos lados.\n\nRapid PVST+ evita bucles de capa 2 mediante root bridge, root port, roles/estados y convergencia. PortFast se usa en puertos de acceso; root guard, loop guard, BPDU filter y BPDU guard controlan escenarios de borde, con precaución para no provocar loops.\n\nReconoce arquitecturas WLAN Cisco, modos AP y conexiones físicas entre AP, WLC, access/trunk y LAG. Compara acceso de gestión por consola, SSH/Telnet, HTTP/HTTPS, TACACS+/RADIUS y administración cloud; SSH es preferible para administración remota cifrada.' }
+      ]},
+      { title: '3. IP Connectivity · 25%', lessons: [
+        { type: 'video', title: '3.1 Clase (video): tabla de routing y rutas estáticas', description: 'Video por grabar: lectura de tabla, decisión de reenvío, rutas IPv4/IPv6 y gateway de último recurso.' },
+        { type: 'theory', title: '3.2 Teoría: conectividad IP y OSPF', content: 'Interpreta código de origen, prefijo, máscara, siguiente salto, métrica y distancia administrativa en una tabla de routing. Un router selecciona primero el prefijo más específico; después considera preferencia y métrica de las rutas candidatas. Si no existe ruta específica, puede usar una ruta por defecto.\n\nConfigura y verifica rutas estáticas IPv4/IPv6, rutas por defecto, flotantes y sumarización según el escenario. Comprende rutas conectadas y cómo una dirección/máscara instala redes locales.\n\nOSPFv2 de área única descubre vecinos, forma adyacencias, intercambia LSAs y calcula el mejor camino con SPF/costo. Reconoce router ID, estados de vecino, elección DR/BDR en redes broadcast y comandos/salidas de verificación. Distingue una falla de adyacencia (área, timers, autenticación, MTU, red) de una ruta que no aparece o un problema de forwarding.' }
+      ]},
+      { title: '4. IP Services · 10%', lessons: [
+        { type: 'video', title: '4.1 Clase (video): servicios de red y QoS', description: 'Video por grabar: NAT, DHCP, DNS, NTP, SNMP, syslog, acceso SSH y transferencia de archivos.' },
+        { type: 'theory', title: '4.2 Teoría: servicios IP', content: 'Configura y verifica NAT inside source estático y mediante pool; diferencia traducción de direcciones y PAT. DHCP asigna parámetros automáticamente; compara cliente, servidor y relay. DNS resuelve nombres, NTP sincroniza hora y SNMP expone métricas para operación. Syslog clasifica eventos por facility y severity.\n\nQoS aplica clasificación, marcado, colas, control de congestión, policing y shaping para dar tratamiento al tráfico. SSH permite gestión remota cifrada con autenticación y claves/usuarios configurados. Reconoce usos y diferencias de TFTP y FTP para transferencia de archivos, respaldos e imágenes. Usa la hora y los logs para correlacionar eventos de red.' }
+      ]},
+      { title: '5. Security Fundamentals · 15%', lessons: [
+        { type: 'video', title: '5.1 Clase (video): endurecimiento, ACL y seguridad de capa 2', description: 'Video por grabar: contraseñas, control de acceso, ACL, DHCP snooping, DAI, port security y WLAN.' },
+        { type: 'theory', title: '5.2 Teoría: fundamentos de seguridad', content: 'Diferencia amenazas, vulnerabilidades, exploits y mitigaciones. Un programa de seguridad combina capacitación/concientización, control de acceso físico, políticas y revisión periódica. Configura acceso local seguro, privilegios y políticas de contraseña; compara MFA, certificados y biometría como alternativas o factores.\n\nCompara VPN IPsec de acceso remoto y site-to-site. Las ACL IPv4/IPv6 filtran por origen, destino, protocolo y puertos; analiza orden, wildcard masks, ubicación y regla implícita final. DHCP snooping limita servidores DHCP no confiables; Dynamic ARP Inspection valida asociaciones IP-MAC y port security restringe direcciones MAC/violaciones en puertos de acceso.\n\nAAA separa autenticación (quién eres), autorización (qué puedes hacer) y accounting (qué actividad se registra). En WLAN diferencia WPA/WPA2/WPA3 y practica la configuración básica de WLAN con WPA2-PSK desde GUI.' }
+      ]},
+      { title: '6. Automation and Programmability · 10%', lessons: [
+        { type: 'video', title: '6.1 Clase (video): SDN, APIs, JSON y automatización', description: 'Video por grabar: controladores, APIs REST, objetos JSON y herramientas de configuración.' },
+        { type: 'theory', title: '6.2 Teoría: redes programables', content: 'La automatización aumenta consistencia y escala, y reduce tareas manuales repetitivas, pero requiere validar cambios y controlar credenciales. En redes tradicionales cada equipo se administra individualmente; el enfoque basado en controlador centraliza intención, estado y políticas.\n\nEn una arquitectura definida por software, underlay aporta conectividad física/IP y overlay crea redes lógicas; fabric integra políticas y transporte. El plano de control decide rutas y el plano de datos reenvía paquetes. APIs northbound conectan aplicaciones/controladores y southbound conectan controladores con infraestructura.\n\nUna API REST usa recursos y métodos HTTP; reconoce autenticación, CRUD, verbos GET/POST/PUT/PATCH/DELETE y codificación JSON. En JSON identifica objetos, arrays, pares clave-valor, cadenas, números, booleanos y null. Ansible y Terraform ayudan a automatizar configuración/declaración de infraestructura. La v1.1 también introduce IA generativa/predictiva y machine learning en operaciones de red: entiende usos y límites, no las confundas con protocolos de forwarding.' }
+      ]}
+    ]
   },
   {
-    id: 'mikrotik', title: 'MikroTik: routing y switching', category: 'Preparación MikroTik', certification: 'MTCNA · MikroTik Certified Network Associate', pricePen: 0.10, level: 'Inicial · Intermedio', duration: '6 h', lessons: 10,
+    id: 'mikrotik', title: 'MikroTik MTCNA: RouterOS', category: 'Preparación MikroTik', certification: 'MTCNA · MikroTik Certified Network Associate', pricePen: 0.10, level: 'Inicial · Intermedio', duration: '18 h · 9 módulos', lessons: 18,
     theme: 'rose', mark: '03', label: 'MIKROTIK · ROUTING',
-    shortDescription: 'Practica RouterOS, direccionamiento, servicios y administración de redes.',
-    description: 'Ruta de preparación para comprender RouterOS y los fundamentos que suelen cubrirse en MTCNA, con prácticas de configuración y diagnóstico. Confirma la versión y el examen oficial vigentes con MikroTik Training.',
-    introTitle: 'Conoce RouterOS',
-    introDescription: 'Una introducción a RouterOS, el laboratorio y los objetivos de aprendizaje de esta ruta MikroTik.',
-    chapters: ['Introducción a la ruta MikroTik', 'Primer acceso y configuración RouterOS', 'Navegación por WinBox y terminal', 'Direcciones IP y DHCP', 'Bridging y switching básico', 'Routing estático', 'Firewall y NAT', 'Wireless y administración', 'Monitoreo y solución de problemas', 'Repaso orientado a MTCNA'],
-    outcomes: ['Configurar tareas esenciales en RouterOS.', 'Comprender direccionamiento, DHCP, routing y NAT.', 'Practicar diagnóstico básico para prepararte para la ruta MTCNA.']
+    shortDescription: 'Preparación del temario oficial MTCNA: RouterOS, bridging, routing, wireless y firewall.',
+    description: 'Ruta teórica alineada con el outline MTCNA oficial actualizado el 29 de septiembre de 2026: introducción y administración, bridging, DHCP, routing, wireless, firewall, QoS, tunnels y herramientas. Requiere fundamentos de TCP/IP, subnetting y capas OSI 1–3. La academia prepara para el contenido, pero no es un MikroTik Training Center ni emite la certificación oficial.',
+    introTitle: '1. MTCNA y RouterOS',
+    introDescription: 'El outline MTCNA recomienda un curso de tres días y práctica en RouterOS. Esta ruta divide sus nueve módulos en videos por grabar, teoría y laboratorios sugeridos; realiza las prácticas en equipo propio o laboratorio seguro.',
+    outcomes: ['Administrar RouterOS y RouterBOARD, respaldos, upgrades y acceso.', 'Configurar servicios básicos, bridging, routing, wireless, firewall, NAT, QoS y túneles.', 'Diagnosticar conectividad con las herramientas integradas de RouterOS.'],
+    modules: [
+      { title: '1. Introduction · RouterOS y administración', lessons: [
+        { type: 'video', title: '1.1 Clase (video): RouterOS, RouterBOARD y primer acceso', description: 'Video por grabar: categorías de hardware, WinBox/MAC-WinBox, WebFig, Quick Set, consola, SSH y acceso seguro.' },
+        { type: 'theory', title: '1.2 Teoría: puesta en marcha y gestión del sistema', content: 'RouterOS es el sistema operativo de los equipos MikroTik; RouterBOARD identifica la plataforma de hardware y SwOS/SwOS Lite se orienta a switching administrado. Los métodos de acceso incluyen WinBox, MAC-WinBox, WebFig, aplicaciones móviles, MAC-Telnet, RoMON, consola y CLI por SSH. Telnet carece de cifrado y debe evitarse en redes no confiables.\n\nComprende la configuración por defecto para acceso a Internet, identidad del equipo, servicios IP y principios de CLI: navegación por menús, ayuda, tab-completion e historial. Administra logins con privilegio mínimo.\n\nActualiza paquetes RouterOS y firmware RouterBOOT siguiendo el changelog y compatibilidad; revisa device-mode y niveles de licencia. Para gestión de configuración distingue backup binario de export legible .rsc, usa Safe Mode al probar cambios remotos y conoce reset, Netinstall y Flashfig. Practica guardar, restaurar y revisar la configuración antes/después del cambio.' }
+      ]},
+      { title: '2. Bridging', lessons: [
+        { type: 'video', title: '2.1 Clase (video): bridges y puertos', description: 'Video por grabar: creación de bridge, ports, asignación de IP y bridge entre enlaces inalámbricos.' },
+        { type: 'theory', title: '2.2 Teoría: conmutación y bridge', content: 'Un bridge conecta interfaces de capa 2 y aprende direcciones MAC para reenviar tramas dentro del dominio de broadcast. Crea el bridge y agrega los puertos que deban pertenecer a ese segmento; las interfaces pueden asumir roles distintos según la topología. Una dirección IP colocada en el bridge administra el dispositivo desde el segmento, mientras que la selección de puertos/bridge determina por dónde transita el tráfico.\n\nDistingue bridging de routing: el bridge conmuta tramas dentro del segmento y el router reenvía paquetes entre redes IP. El outline MTCNA incluye bridging de redes inalámbricas y station bridge. Comprueba compatibilidad y modo de estación de acuerdo al escenario; evita crear bucles de capa 2 y valida la tabla de hosts y tráfico.' }
+      ]},
+      { title: '3. DHCP, pools, ARP y DNS', lessons: [
+        { type: 'video', title: '3.1 Clase (video): DHCP server/client y direcciones', description: 'Video por grabar: DHCP client/server, leases, IP pool, tabla ARP y resolver DNS.' },
+        { type: 'theory', title: '3.2 Teoría: asignación dinámica y resolución', content: 'Un DHCP client obtiene parámetros de un servidor upstream; un DHCP server ofrece direcciones desde un pool y anuncia gateway/DNS según su configuración. Revisa la interfaz/bridge donde escucha, rango no solapado, network settings y estado/tiempo de leases. Un pool define rangos disponibles y puede gestionarse en varias secciones.\n\nARP relaciona IPv4 con direcciones MAC en el enlace local. Comprende modos ARP y consulta la tabla para encontrar conflictos, entradas incompletas o cambios de equipo. DNS traduce nombres a direcciones; RouterOS puede resolver consultas para clientes si está habilitado y se configuran upstreams/reglas correctamente. En el laboratorio verifica la concesión, gateway, resolución por nombre y conectividad.' }
+      ]},
+      { title: '4. Routing', lessons: [
+        { type: 'video', title: '4.1 Clase (video): tabla de rutas y routing estático', description: 'Video por grabar: gateway predeterminado, flags, distancia administrativa y ECMP.' },
+        { type: 'theory', title: '4.2 Teoría: decisión de ruta y rutas estáticas', content: 'RouterOS selecciona rutas según el prefijo más específico y atributos de preferencia. Interpreta flags y estado activo/inactivo en la tabla; una ruta configurada puede no instalarse si falla el gateway o una condición requerida. La distancia administrativa permite preferir rutas de distintas fuentes; revisa el proceso de routing y cómo se incorporan rutas dinámicas.\n\nConfigura rutas estáticas para redes remotas y una default route para destinos sin ruta más específica. Comprueba gateway alcanzable y ruta de retorno. ECMP distribuye flujos entre caminos de costo equivalente; no implica que un solo flujo siempre agregue el ancho de banda de todos los enlaces. Sigue el flujo con traceroute y tabla de rutas para diferenciar error de gateway, máscara o política.' }
+      ]},
+      { title: '5. Wireless', lessons: [
+        { type: 'video', title: '5.1 Clase (video): enlaces inalámbricos y seguridad', description: 'Video por grabar: AP/station, bandas/canales, paquetes wireless, WPA2/WPA3 y monitoreo.' },
+        { type: 'theory', title: '5.2 Teoría: radiofrecuencia y RouterOS wireless', content: 'Reconoce estándares 802.11a/b/g/n/ac/ax/be, bandas y canales; selecciona frecuencia considerando regulaciones del país, interferencia y canales compartidos. Data rates/chains dependen de capacidades de transmisión/recepción, sensibilidad y condiciones RF. Instala el paquete wireless que corresponda al hardware/versión.\n\nUn Access Point anuncia una WLAN y una estación se asocia al AP remoto. Alinea SSID, banda, canal y modo. Protege el enlace con WPA-PSK/WPA2-PSK/WPA3-PSK y configuración de management frames compatible; revisa access lists, aislamiento de clientes y opciones WPS según necesidad. Usa scan y registration table para diagnosticar señal, asociación y clientes conectados.' }
+      ]},
+      { title: '6. Firewall, NAT y connection tracking', lessons: [
+        { type: 'video', title: '6.1 Clase (video): filter rules, chains y NAT', description: 'Video por grabar: input/forward, address lists, interface lists, masquerade, dst-nat y logging.' },
+        { type: 'theory', title: '6.2 Teoría: filtros, protección del router y NAT', content: 'El firewall filter procesa paquetes según chain, coincidencias y acción. Input controla tráfico dirigido al propio router; forward controla tráfico que atraviesa el router hacia los clientes. Organiza reglas considerando estado de conexión, interfaces, origen/destino, servicios y orden; address lists e interface lists ayudan a mantener políticas legibles. Connection tracking mantiene el estado de flujos y permite que reglas distingan conexiones new/established/related/invalid.\n\nSource NAT cambia el origen: masquerade es común cuando la IP WAN es dinámica y src-nat cuando se especifica una traducción. Destination NAT/redirection cambia el destino/puerto y puede publicar un servicio interno; limita lo expuesto y permite solo tráfico previsto. FastTrack/Fast Path optimizan ciertos flujos, pero pueden afectar qué funciones/contadores se aplican. Usa firewall logging de forma acotada y confirma tráfico con contadores y sesiones.' }
+      ]},
+      { title: '7. QoS', lessons: [
+        { type: 'video', title: '7.1 Clase (video): Simple Queues y PCQ', description: 'Video por grabar: límites, limit-at, max-limit, burst, queue types y reparto por clientes.' },
+        { type: 'theory', title: '7.2 Teoría: control de ancho de banda', content: 'Simple Queue controla tráfico hacia objetivos y destinos con limit-at (ancho garantizado) y max-limit (límite superior). Define target correcto para host/subred y entiende qué dirección de tráfico está siendo limitada. Burst puede permitir ráfagas temporales si las condiciones configuradas se cumplen.\n\nPCQ crea subcolas para repartir ancho de banda entre usuarios o flujos; el PCQ rate y queue size influyen en reparto, utilización y memoria. Los queue types definen algoritmos de encolamiento. Diseña una política simple, prueba varios clientes y compara contadores antes de añadir reglas complejas; las colas solo operan como se espera si los paquetes recorren el punto configurado.' }
+      ]},
+      { title: '8. Tunnels y VPN', lessons: [
+        { type: 'video', title: '8.1 Clase (video): PPP, PPPoE e IPsec remoto', description: 'Video por grabar: perfiles PPP, secrets, conexiones activas, cliente PPPoE, IP Cloud y L2TP.' },
+        { type: 'theory', title: '8.2 Teoría: acceso punto a punto y redes remotas', content: 'PPP agrupa opciones de acceso punto a punto. PPP Profile define parámetros reutilizables; PPP Secrets asocia credenciales/atributos a usuarios y Active Connections muestra sesiones establecidas. Un cliente PPPoE requiere service-name/perfil coherentes y validación del enlace y autenticación.\n\nIP Cloud ofrece funciones de descubrimiento/alcance remoto según disponibilidad y configuración. Para comunicación segura con redes remotas comprende la finalidad de VPN y cifrado; el outline incluye Quick Set VPN con L2TP y Back to Home VPN. Verifica rutas, firewall, DNS/nombre dinámico y logs. No expongas administración innecesaria a Internet y no confundas la comodidad de un asistente con una revisión completa del modelo de seguridad.' }
+      ]},
+      { title: '9. Tools, monitoring y troubleshooting', lessons: [
+        { type: 'video', title: '9.1 Clase (video): herramientas y diagnóstico', description: 'Video por grabar: ping, traceroute, Torch, Netwatch, packet sniffer, CPU, SNMP y logs.' },
+        { type: 'theory', title: '9.2 Teoría: operación y solución de problemas', content: 'Ping prueba alcance y pérdida; MAC ping ayuda a verificar conectividad en el segmento local. Traceroute identifica saltos hacia un destino. Torch observa tráfico por interfaz y criterios; IP Scan descubre equipos del segmento. Netwatch monitorea una dirección y puede registrar/cambiar acciones ante su estado. Profiler muestra carga de CPU y packet sniffer captura paquetes para análisis.\n\nPara monitoreo revisa tráfico de interfaces, recursos, health, bandwidth test/speedtest, gráficas y logs. SNMP read permite observación desde un sistema de gestión; consulta MIB para entender los objetos expuestos. Clock/NTP, history y logging ayudan a correlacionar eventos; e-mail puede notificar alertas y MAC-server administra los servicios de acceso por MAC.\n\nPara soporte, conoce archivos supout.rif/autosupout.rif y su viewer, añade nombres/comentarios legibles a la configuración y conserva diagramas de red. Diagnostica por capas y aplica un cambio cada vez.' }
+      ]}
+    ]
   }
 ];
 
@@ -257,7 +319,9 @@ function renderLessons(course, enrolled) {
     selectLesson(course, lessons[index], button);
   }));
   if (enrolled && lessons.length) {
-    selectLesson(course, lessons[0], lessonList.querySelector('[data-lesson-index="0"]'));
+    const firstAvailableIndex = lessons.findIndex((lesson) => lesson.type === 'theory' || lesson.videoUrl);
+    const initialIndex = firstAvailableIndex < 0 ? 0 : firstAvailableIndex;
+    selectLesson(course, lessons[initialIndex], lessonList.querySelector(`[data-lesson-index="${initialIndex}"]`));
   } else {
     videoError.textContent = '🔒 Acceso bloqueado. Simula la compra e inicia sesión para abrir las clases y la teoría.';
     videoError.hidden = false;
@@ -275,11 +339,13 @@ function selectLesson(course, lesson, button) {
   theoryPanel.textContent = lesson.content || '';
   video.pause();
   video.removeAttribute('src');
-  video.querySelector('source').removeAttribute('src');
+  const source = video.querySelector('source');
+  if (lesson.type === 'video' && lesson.videoUrl) source.src = lesson.videoUrl;
+  else source.removeAttribute('src');
   video.load();
   if (lesson.type === 'video') {
     videoError.textContent = 'Video pendiente de carga. Al integrar Cloudflare Stream, cada lección tendrá su reproductor aquí.';
-    videoError.hidden = false;
+    videoError.hidden = Boolean(lesson.videoUrl);
   } else {
     videoError.hidden = true;
   }

@@ -43,7 +43,9 @@ Si la terminal dice `fatal: not a git repository`, confirma que abriste la carpe
 
 ## Editar los cursos
 
-Los datos de ejemplo están al inicio de `app.js`, en el arreglo `courses`. El temario de Fortinet está organizado como módulos, con lecciones tipo video y teoría. Las personas sin acceso pueden consultar los títulos del programa; el reproductor y el contenido teórico se muestran bloqueados. La ruta se basa en el examen Fortinet NSE 4 - FortiOS 8.0 Administrator; revisa sus objetivos vigentes y practica en laboratorio. Este curso de preparación no es una certificación oficial.
+Los datos de ejemplo están al inicio de `app.js`, en el arreglo `courses`. Fortinet tiene ocho módulos y 34 lecciones; CCNA cubre sus seis dominios oficiales; MTCNA sigue los nueve módulos del outline oficial. Cada módulo tiene una clase en video pendiente de grabación/carga y una lección de teoría. Quien no tenga acceso puede consultar los títulos, mientras el reproductor y la teoría quedan bloqueados en la interfaz. La academia ofrece preparación; no emite las certificaciones oficiales ni reemplaza laboratorios o los requisitos de cada certificador.
+
+CCNA está orientado al examen **200-301 v1.1**. Cisco indica que la última fecha para rendirlo es el 2 de febrero de 2027 y que la versión 2.0 comienza el 3 de febrero de 2027; revisa el [blueprint vigente de CCNA](https://learningnetwork.cisco.com/s/ccna-exam-topics) antes de publicar la ruta para nuevos alumnos. MTCNA sigue el [outline oficial de MikroTik](https://cdn.mikrotik.com/web-assets/training/course_outlines/MTCNA_course_outline.pdf), actualizado el 29 de septiembre de 2026.
 
 El campo `pricePen` fija el precio que se muestra en las tarjetas y en la ficha del curso. Está en `0.10` soles como valor temporal de prueba. Esto todavía es solo un precio mostrado; el checkout de Culqi no está integrado.
 
